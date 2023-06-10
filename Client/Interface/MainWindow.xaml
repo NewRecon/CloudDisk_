@@ -6,7 +6,32 @@
         xmlns:local="clr-namespace:Interface"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+    <Grid x:Name="grid">
+        <ListView x:Name="viewList" Visibility="Collapsed" Margin="10,90,442,76">
+
+        </ListView>
+        <Button x:Name="loginButton" Content="Login" HorizontalAlignment="Left" Margin="655,41,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.818,0.573" FontSize="14" Click="Button_Click"/>
+        <Button x:Name="SingButton" Content="Sign Up" HorizontalAlignment="Left" Margin="720,41,0,0" VerticalAlignment="Top" FontSize="14" Click="SingButton_Click"/>
+        <StackPanel x:Name="loginStackPanel" Visibility="Collapsed" Margin="307,82,204,112">
+
+            <Label Content="Login" Width="216" Height="39" FontSize="14" />
+            <TextBox TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
+            <Label Content="Password" Width="214" Height="33"/>
+            <PasswordBox Width="216"/>
+            <Button x:Name="okLoginButton" Content="Ok" Width="106" Margin="30"/>
+
+        </StackPanel>
+        <StackPanel x:Name="SingUpStackPanel" Visibility="Collapsed" Margin="307,82,204,91">
+
+            <Label Content="Login" Width="216" Height="39" FontSize="14" />
+            <TextBox TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
+            <Label Content="Password" Width="214" Height="33"/>
+            <PasswordBox Width="216"/>
+            <Label Content="E-mail" Width="216" Height="39" FontSize="14" />
+            <TextBox TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
+            <Button x:Name="okSingButton" Content="Ok" Width="106" Margin="30"/>
+
+        </StackPanel>
+
     </Grid>
 </Window>
