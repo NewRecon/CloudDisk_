@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,8 +32,11 @@ namespace Interface
 
             listViewSourse(strtest);
 
-        }
 
+            
+            
+            
+        }
         void addListViewEl(string str,string name)
         {
             using (MemoryStream ms = new MemoryStream(File.ReadAllBytes($"{str}.ico")))
