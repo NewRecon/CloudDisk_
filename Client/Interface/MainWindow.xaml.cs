@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,14 +24,14 @@ namespace Interface
     public partial class MainWindow : Window
     {
         Dictionary<string, Image> images = new Dictionary<string, Image>();
-        
+        public string strtest = "/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/Battle.net-Setup.exe;4838352;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик (1).txt;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/tsetup-x64.4.6.5.exe;40488912;";
         public MainWindow()
         {
-            string strtest = "/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/Battle.net-Setup.exe;4838352;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик (1).txt;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/tsetup-x64.4.6.5.exe;40488912;";
+           
             InitializeComponent();
 
 
-            listViewSourse(strtest);
+            //listViewSourse(strtest);
 
 
             
@@ -109,6 +110,67 @@ namespace Interface
             viewList.Items.Remove(viewList.SelectedItem);
         }
 
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (viewList.SelectedItem != null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    //MessageBox.Show(selectedListView());
 
+                }
+            }
+        }
+
+        private void DowlnFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (viewList.SelectedItem != null)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                if (ofd.ShowDialog() == true)
+                {
+                    MessageBox.Show(ofd.FileName);
+                }
+            }
+        }
+
+        private void DeleteFile_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Out_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void okLoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
+            if (true)
+            {
+                listViewSourse(strtest);
+                loginStackPanel.Visibility = Visibility.Collapsed;
+                SaveFile.Visibility = Visibility.Visible;
+                DowlnFile.Visibility = Visibility.Visible;
+                DeleteFile.Visibility = Visibility.Visible;
+            }
+
+
+        }
+
+        private void okSingButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Login: " + SingTextBox.Text + "\nPassword: " + SingPassword.Password +"\nE-mail: "+SingEmailTextBox.Text);
+            if (true)
+            {
+                listViewSourse(strtest);
+                SingUpStackPanel.Visibility = Visibility.Collapsed;
+                SaveFile.Visibility = Visibility.Visible;
+                DowlnFile.Visibility = Visibility.Visible;
+                DeleteFile.Visibility = Visibility.Visible;
+            }
+        }
     }
 }

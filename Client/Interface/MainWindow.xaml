@@ -12,39 +12,39 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <ListView x:Name="viewList" Visibility="Visible">
+            <ListView x:Name="viewList" Visibility="Collapsed">
 
             </ListView>
-            <Button x:Name="SaveFile" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Скачать" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,101,0,0"/>
-            <Button x:Name="DowlnFile" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="YellowGreen" Content="Загрузить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,135,0,0"/>
-            <Button x:Name="DeleteFile" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Red" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,170,0,0"/>
-            <Label Grid.Column="1" Content="Login" HorizontalAlignment="Left" Margin="258,10,0,0" VerticalAlignment="Top" Width="141"/>
+            <Button x:Name="SaveFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Скачать" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,101,0,0" Click="SaveFile_Click"/>
+            <Button x:Name="DowlnFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="YellowGreen" Content="Загрузить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,135,0,0" Click="DowlnFile_Click"/>
+            <Button x:Name="DeleteFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Red" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,170,0,0" Click="DeleteFile_Click"/>
+            <Label Grid.Column="1" Visibility="Collapsed" Content="Login" HorizontalAlignment="Left" Margin="258,10,0,0" VerticalAlignment="Top" Width="141"/>
 
         </Grid>
 
         <StackPanel x:Name="loginStackPanel" Visibility="Collapsed" Margin="307,82,204,112">
 
             <Label Content="Login" Width="216" Height="39" FontSize="14" />
-            <TextBox TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
+            <TextBox x:Name="LoginTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
             <Label Content="Password" Width="214" Height="33"/>
-            <PasswordBox Width="216"/>
-            <Button x:Name="okLoginButton" Content="Ok" Width="106" Margin="30"/>
+            <PasswordBox x:Name="LoginPassword" Width="216"/>
+            <Button x:Name="okLoginButton" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Ok" Width="106" Margin="30" Click="okLoginButton_Click"/>
 
         </StackPanel>
         <StackPanel x:Name="SingUpStackPanel" Visibility="Collapsed" Margin="307,82,204,91">
 
             <Label Content="Login" Width="216" Height="39" FontSize="14" />
-            <TextBox TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
+            <TextBox x:Name="SingTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
             <Label Content="Password" Width="214" Height="33"/>
-            <PasswordBox Width="216"/>
+            <PasswordBox x:Name="SingPassword" Width="216"/>
             <Label Content="E-mail" Width="216" Height="39" FontSize="14" />
-            <TextBox TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
-            <Button x:Name="okSingButton" Content="Ok" Width="106" Margin="30"/>
+            <TextBox x:Name="SingEmailTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
+            <Button x:Name="okSingButton" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Ok" Width="106" Margin="30" Click="okSingButton_Click"/>
 
         </StackPanel>
-        <Button x:Name="loginButton" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Background="CadetBlue" Content="Login" HorizontalAlignment="Left"  VerticalAlignment="Top" RenderTransformOrigin="0.818,0.573" FontSize="14" Click="Button_Click" Width="61" Margin="653,41,0,0"/>
-        <Button x:Name="SingButton" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Background="CadetBlue" Content="Sign Up" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Click="SingButton_Click" Width="70" Margin="731,41,0,0"/>
-        <Button x:Name="Out" Style="{StaticResource RoundButtonTemplate}" Content="Log me out" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="100" FontSize="14" Margin="716,48,0,0"/>
+        <Button x:Name="loginButton" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Content="Login" HorizontalAlignment="Left"  VerticalAlignment="Top" RenderTransformOrigin="0.818,0.573" FontSize="14" Click="Button_Click" Width="61" Margin="653,41,0,0"/>
+        <Button x:Name="SingButton" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Content="Sign Up" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Click="SingButton_Click" Width="70" Margin="731,41,0,0"/>
+        <Button x:Name="Out" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log me out" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="100" FontSize="14" Margin="716,48,0,0" Click="Out_Click"/>
 
     </Grid>
 </Window>
