@@ -12,13 +12,13 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <ListView x:Name="viewList" Visibility="Collapsed">
+            <ListView x:Name="viewList" Visibility="Collapsed" Margin="0,36,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto">
 
             </ListView>
             <Button x:Name="SaveFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Скачать" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,101,0,0" Click="SaveFile_Click"/>
             <Button x:Name="DowlnFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="YellowGreen" Content="Загрузить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,135,0,0" Click="DowlnFile_Click"/>
             <Button x:Name="DeleteFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Red" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,170,0,0" Click="DeleteFile_Click"/>
-            <Label Grid.Column="1" Visibility="Collapsed" Content="Login" HorizontalAlignment="Left" Margin="258,10,0,0" VerticalAlignment="Top" Width="141"/>
+            <Label x:Name="current_User" Grid.Column="1" Visibility="Collapsed" Content="Login" HorizontalAlignment="Left" Margin="258,10,0,0" VerticalAlignment="Top" Width="141" FontSize="14"/>
 
         </Grid>
 
@@ -44,7 +44,7 @@
         </StackPanel>
         <Button x:Name="loginButton" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Content="Login" HorizontalAlignment="Left"  VerticalAlignment="Top" RenderTransformOrigin="0.818,0.573" FontSize="14" Click="Button_Click" Width="61" Margin="653,41,0,0"/>
         <Button x:Name="SingButton" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Content="Sign Up" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Click="SingButton_Click" Width="70" Margin="731,41,0,0"/>
-        <Button x:Name="Out" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log me out" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="100" FontSize="14" Margin="716,48,0,0" Click="Out_Click"/>
+        <Button x:Name="Out" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log me out" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="100" FontSize="14" Margin="666,46,0,0" Click="Out_Click"/>
 
     </Grid>
 </Window>

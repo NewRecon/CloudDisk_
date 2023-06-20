@@ -24,7 +24,7 @@ namespace Interface
     public partial class MainWindow : Window
     {
         Dictionary<string, Image> images = new Dictionary<string, Image>();
-        public string strtest = "/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/Battle.net-Setup.exe;4838352;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик (1).txt;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/tsetup-x64.4.6.5.exe;40488912;";
+        public string strtest = "/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/Battle.net-Setup.exe;4838352;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик (1).txt;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/tsetup-x64.4.6.5.exe;40488912;";
         public MainWindow()
         {
            
@@ -142,6 +142,13 @@ namespace Interface
 
         private void Out_Click(object sender, RoutedEventArgs e)
         {
+            current_User = null;
+            current_User.Visibility = Visibility.Collapsed;
+            Out.Visibility = Visibility.Collapsed;
+            SaveFile.Visibility = Visibility.Collapsed;
+            DowlnFile.Visibility = Visibility.Collapsed;
+            DeleteFile.Visibility = Visibility.Collapsed;
+            viewList.Visibility = Visibility.Collapsed;
 
         }
 
@@ -155,6 +162,11 @@ namespace Interface
                 SaveFile.Visibility = Visibility.Visible;
                 DowlnFile.Visibility = Visibility.Visible;
                 DeleteFile.Visibility = Visibility.Visible;
+                loginButton.Visibility = Visibility.Collapsed;
+                SingButton.Visibility = Visibility.Collapsed;
+                current_User.Visibility = Visibility.Visible;
+                current_User.Content = LoginTextBox.Text;
+                Out.Visibility = Visibility.Visible;
             }
 
 
@@ -163,6 +175,7 @@ namespace Interface
         private void okSingButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Login: " + SingTextBox.Text + "\nPassword: " + SingPassword.Password +"\nE-mail: "+SingEmailTextBox.Text);
+            //если прослойка вернула true
             if (true)
             {
                 listViewSourse(strtest);
@@ -170,6 +183,12 @@ namespace Interface
                 SaveFile.Visibility = Visibility.Visible;
                 DowlnFile.Visibility = Visibility.Visible;
                 DeleteFile.Visibility = Visibility.Visible;
+                loginButton.Visibility = Visibility.Collapsed;
+                SingButton.Visibility = Visibility.Collapsed;
+                current_User.Visibility = Visibility.Visible;
+                current_User.Content = SingTextBox.Text;
+                Out.Visibility = Visibility.Visible;
+
             }
         }
     }
