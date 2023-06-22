@@ -142,13 +142,18 @@ namespace Interface
 
         private void Out_Click(object sender, RoutedEventArgs e)
         {
-            current_User = null;
             current_User.Visibility = Visibility.Collapsed;
             Out.Visibility = Visibility.Collapsed;
             SaveFile.Visibility = Visibility.Collapsed;
             DowlnFile.Visibility = Visibility.Collapsed;
             DeleteFile.Visibility = Visibility.Collapsed;
             viewList.Visibility = Visibility.Collapsed;
+            loginButton.Visibility = Visibility.Visible;
+            SingButton.Visibility = Visibility.Visible;
+            LoginTextBox.Text = "";
+            LoginPassword.Clear();
+            SingTextBox.Text = "";
+            SingPassword.Clear();
 
         }
 
@@ -190,6 +195,19 @@ namespace Interface
                 Out.Visibility = Visibility.Visible;
 
             }
+        }
+
+        private void viewList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //удалить "а" debug
+            var a = ((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock;
+            if(!(((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock).Text.Contains("."))
+            {
+                //запускается метод с прослойки для который вернет список файлов в данной папке
+                MessageBox.Show(a.Text);
+            }
+
+            
         }
     }
 }
