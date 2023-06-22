@@ -18,11 +18,12 @@ namespace Controller
         static IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
         static TcpClient client = new TcpClient();
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Autorization("abobus","123321");
+            //await AutorizationAsync("abobus", "123321");
         }
 
+        // заглушка
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             return true;
@@ -33,11 +34,13 @@ namespace Controller
             //return false;
         }
 
-        static public void Autorization(string login, string password)
+        static public async Task AutorizationAsync(string email, string password)
         {
+            #region SSL
             //X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             //store.Open(OpenFlags.ReadOnly);
             //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "CloudDiskCer", false);
+            #endregion
 
             try
             {
@@ -49,11 +52,17 @@ namespace Controller
                     JsonToSend send = new JsonToSend()
                     {
                         Command = "Autorization",
-                        Login = login,
+                        Email = email,
                         Password = password
                     };
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(send));
-                    sslStream.Write(messsage);
+                    await sslStream.WriteAsync(messsage,0,messsage.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await sslStream.ReadAsync(messsage, 0, messsage.Length);
+                    string recievedMessage = Encoding.UTF8.GetString(messsage,0,recievedMessageSize);
+                    JsonToRecieve toRecieve = JsonSerializer.Deserialize<JsonToRecieve>(recievedMessage);
+
                     sslStream.Flush();
                 }             
             }
@@ -63,16 +72,48 @@ namespace Controller
             }
         }
 
-        //public bool Registration(string login, string password)
-        //{
+        public static async Task RegistrationAsync(string email, string password)
+        {
+            try
+            {
+                client.Connect(endPoint);
+                using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
+                {
+                    sslStream.AuthenticateAsClient("CloudDiskCer");
 
-        //}
+                    JsonToSend send = new JsonToSend()
+                    {
+                        Command = "Registration",
+                        Email = email,
+                        Password = password
+                    };
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(send));
+                    await sslStream.WriteAsync(messsage, 0, messsage.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await sslStream.ReadAsync(messsage, 0, messsage.Length);
+                    string recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+                    JsonToRecieve toRecieve = JsonSerializer.Deserialize<JsonToRecieve>(recievedMessage);
+
+                    sslStream.Flush();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 
-    class JsonToSend
+    public class JsonToSend
     {
         public string Command { get; set; }
-        public string Login { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
+    }
+
+    public class JsonToRecieve
+    {
+        public string Directory { get; set; }
     }
 }

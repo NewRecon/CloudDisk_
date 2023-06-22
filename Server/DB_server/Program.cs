@@ -9,63 +9,112 @@ using System.Net.Sockets;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
-using System.IO;
+using DB_server.DataModel;
 
 namespace DB_server
 {
     internal class Program
     {
-        static TcpClient client;
         static TcpListener listener = new TcpListener(IPAddress.Any, 9000);
+
         static X509Certificate2 serverCertificate = null;
 
         static async Task Main(string[] args)
         {
+            // запустить от имени администратора
+            #region SSL
             serverCertificate = new X509Certificate2(@"C:\Users\99max\Desktop\CloudDisk\Server\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
-
             //X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             //store.Open(OpenFlags.ReadOnly);
             //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);
             //serverCertificate = cert[0];
-
+            #endregion
 
             listener.Start();
             while (true)
             {
                 await Task.Yield();
-                client = await listener.AcceptTcpClientAsync();
-                _ = Task.Run(() => RecieveAsync());
+                Client client = new Client(await listener.AcceptTcpClientAsync());
+                _ = Task.Run(() => RecieveAsync(client));
             }
         }
 
-        static async Task RecieveAsync()
+        static async Task RecieveAsync(Client client)
         {
-            
-
             await Console.Out.WriteLineAsync("Client connected");
             try
             {
-                using (SslStream sslStream = new SslStream(client.GetStream(), false))
+                using (SslStream sslStream = new SslStream(client.tcpClient.GetStream(), false))
                 {
                     sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
                     sslStream.ReadTimeout = 5000;
                     sslStream.WriteTimeout = 5000;
-                    JsonToRecieve recieve = JsonSerializer.Deserialize<JsonToRecieve>(await ReadMessageAsync(sslStream));
-                    if (recieve.Command == "Autorization")
+                    client.sslStream = sslStream;
+                    client.json = JsonSerializer.Deserialize<JsonToRecieve>(await ReadMessageAsync(sslStream));
+                    if (client.json.Command == "Autorization")
                     {
-                        await Console.Out.WriteLineAsync(recieve.Command); // debug
-                        await Console.Out.WriteLineAsync(recieve.Login); // debug
-                        await Console.Out.WriteLineAsync(recieve.Password); // debug
+                        await AutorizationAsync(client);
                     }
-                    else if (recieve.Command == "Registration")
+                    else if (client.json.Command == "Registration")
                     {
-                        await Console.Out.WriteLineAsync(recieve.Command); // debug
+                        await RegistartionAsync(client);
                     }
                 }
             }
             catch(Exception ex)
             {
                 await Console.Out.WriteLineAsync(ex.Message);
+            }
+        }
+
+        static async Task AutorizationAsync(Client client)
+        {
+            using (UserContext context = new UserContext())
+            {
+                User user = context.Users.FirstOrDefault(c => c.Email == client.json.Email && c.Password == client.json.Password);
+                byte[] messageToSend;
+                if (user != null)
+                {
+                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new JsonToSend() {Directory = user.Directory}));
+                }
+                else
+                {
+                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new JsonToSend() { Directory = "NaN" }));
+                }
+
+                await client.sslStream.WriteAsync(messageToSend, 0, messageToSend.Length);
+            }
+        }
+
+        static async Task RegistartionAsync(Client client)
+        {
+            using (UserContext context = new UserContext())
+            {
+                byte[] messageToSend;
+                if (context.Users.FirstOrDefault(c => c.Email == client.json.Email && c.Password == client.json.Password) != null)
+                {
+                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new JsonToSend() { Directory = "NaN" }));
+                }
+                else
+                {
+                    string directory = new Guid(client.json.Email).ToString();
+                    context.Users.Add(new User()
+                    {
+                        Email = client.json.Email,
+                        Password = client.json.Password,
+                        Directory = directory
+                    });
+                    context.SaveChanges();
+
+                    JsonToSend toSend = new JsonToSend()
+                    {
+                        Directory = directory
+                    };
+
+                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toSend));
+                }
+
+                await client.sslStream.WriteAsync(messageToSend, 0, messageToSend.Length);
             }
         }
 
@@ -80,7 +129,7 @@ namespace DB_server
     class JsonToRecieve
     {
         public string Command { get; set; }
-        public string Login { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
     class JsonToSend
@@ -88,8 +137,15 @@ namespace DB_server
         public string Directory { get; set; }
     }
 
-    class Entity
+    class Client
     {
+        public TcpClient tcpClient;
+        public SslStream sslStream;
+        public JsonToRecieve json;
 
+        public Client(TcpClient tcpClient)
+        {
+            this.tcpClient = tcpClient;
+        }
     }
 }
