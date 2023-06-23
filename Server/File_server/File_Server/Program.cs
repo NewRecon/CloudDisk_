@@ -50,27 +50,27 @@ namespace File_Server
 
 
 
-                if (userRequest.Request == "Info")//протестировано
-                    await FileInfo(ns, userRequest.Login);
+                if (userRequest.Request == "Info")
+                    await FileAndDirectoryInfoAsync(ns, userRequest.Key);
 
-                else if (userRequest.Request == "CreateDirectory")//протестировано
-                    await CreateDirectory(ns, userRequest.Path, userRequest.Login);
+                else if (userRequest.Request == "CreateDirectory")
+                    await CreateDirectoryAsync(ns, userRequest.Path, userRequest.Key);
 
-                else if (userRequest.Request == "DeleteFile")//протестировано
-                    await FileDelete(ns, userRequest.Path, userRequest.Login);
+                else if (userRequest.Request == "DeleteFile")
+                    await FileDeleteAsync(ns, userRequest.Path, userRequest.Key);
 
-                else if (userRequest.Request == "DeleteDirectory")//протестировано
-                    await DeleteDirectory(ns, userRequest.Path, userRequest.Login);
+                else if (userRequest.Request == "DeleteDirectory")
+                    await DeleteDirectoryAsync(ns, userRequest.Path, userRequest.Key);
 
-                else if (userRequest.Request == "Upload")//протестировано
-                    await UploadFile(ns, userRequest.Path, userRequest.Login);
+                else if (userRequest.Request == "Upload")
+                    await UploadFileAsync(ns, userRequest.Path, userRequest.Key);
 
-                else if (userRequest.Request == "Download")//протестировано
-                    await DownloadFile(ns, userRequest.Path);
+                else if (userRequest.Request == "Download")
+                    await DownloadFileAsync(ns, userRequest.Path);
             }
         }
 
-        static async Task UploadFile(NetworkStream ns, string path, string login)
+        static async Task UploadFileAsync(NetworkStream ns, string path, string key)
         {
             byte[] bytes = new byte[4096];
             using (FileStream fs = new FileStream(pathMainDirectory + path, FileMode.OpenOrCreate))
@@ -78,39 +78,36 @@ namespace File_Server
                 var count = await ns.ReadAsync(bytes, 0, bytes.Length);
                 while (count > 0)
                 {
-                    Console.WriteLine($"вход каунт {count}");
                     await fs.WriteAsync(bytes, 0, count);
                     if (count < 4096)
                         break;
                     count = await ns.ReadAsync(bytes, 0, bytes.Length);
-                    Console.WriteLine($"выход каунт {count}");
                 }
             }
-            Console.WriteLine("файл получен");
-            await FileInfo(ns, login);
+            await FileAndDirectoryInfoAsync(ns, key);
         }
 
-        static async Task DownloadFile(NetworkStream ns, string path)
+        static async Task DownloadFileAsync(NetworkStream ns, string path)
         {
             byte[] file = File.ReadAllBytes(pathMainDirectory + path);
             await ns.WriteAsync(file, 0, file.Length);
         }
 
-        static async Task FileInfo(NetworkStream ns, string login)
+        static async Task FileAndDirectoryInfoAsync(NetworkStream ns, string key)
         {
-            IEnumerable<string> allFiles = Directory.EnumerateFiles(pathMainDirectory + login, "*.*", SearchOption.AllDirectories);
+            IEnumerable<string> allFiles = Directory.EnumerateFiles(pathMainDirectory + key, "*.*", SearchOption.AllDirectories);
             StringBuilder fileInfo = new StringBuilder();
             foreach (string filename in allFiles)
             {
-                int snipFilePath = filename.LastIndexOf(login);
+                int snipFilePath = filename.LastIndexOf(key);
                 fileInfo.Append(filename.Substring(snipFilePath) + ";" + new FileInfo(filename).Length + ";");
             }
 
-            IEnumerable<string> allDirectory = Directory.EnumerateDirectories(pathMainDirectory + login, "*.*", SearchOption.AllDirectories);
+            IEnumerable<string> allDirectory = Directory.EnumerateDirectories(pathMainDirectory + key, "*.*", SearchOption.AllDirectories);
             StringBuilder directoryInfo = new StringBuilder();
             foreach (string filename in allDirectory)
             {
-                int snipDirectoryPath = filename.LastIndexOf(login);
+                int snipDirectoryPath = filename.LastIndexOf(key);
                 directoryInfo.Append(filename.Substring(snipDirectoryPath) + ";");
             }
 
@@ -126,29 +123,29 @@ namespace File_Server
             Console.WriteLine("Файл предан");
         }
 
-        static async Task CreateDirectory(NetworkStream ns, string path, string login)
+        static async Task CreateDirectoryAsync(NetworkStream ns, string path, string key)
         {
             Directory.CreateDirectory(pathMainDirectory + path);
-            await FileInfo(ns, login);
+            await FileAndDirectoryInfoAsync(ns, key);
         }
 
-        static async Task FileDelete(NetworkStream ns, string path, string login)
+        static async Task FileDeleteAsync(NetworkStream ns, string path, string key)
         {
             File.Delete(pathMainDirectory + path);
-            await FileInfo(ns, login);
+            await FileAndDirectoryInfoAsync(ns, key);
         }
 
-        static async Task DeleteDirectory(NetworkStream ns, string path, string login)
+        static async Task DeleteDirectoryAsync(NetworkStream ns, string path, string key)
         {
             Directory.Delete(pathMainDirectory + path);
-            await FileInfo(ns, login);
+            await FileAndDirectoryInfoAsync(ns, key);
         }
     }
 
     public class JsonRequest
     {
         public string Request { get; set; }
-        public string Login { get; set; }
+        public string Key { get; set; }
         public string Path { get; set; }
     }
 
