@@ -16,7 +16,6 @@ namespace DB_server
     internal class Program
     {
         static TcpListener listener = new TcpListener(IPAddress.Any, 9000);
-
         static X509Certificate2 serverCertificate = null;
 
         static async Task Main(string[] args)
@@ -31,6 +30,7 @@ namespace DB_server
             #endregion
 
             listener.Start();
+            await Console.Out.WriteLineAsync("Server started");
             while (true)
             {
                 await Task.Yield();
@@ -45,12 +45,19 @@ namespace DB_server
             try
             {
                 using (SslStream sslStream = new SslStream(client.tcpClient.GetStream(), false))
+                //using (NetworkStream sslStream = client.tcpClient.GetStream())
                 {
                     sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
                     sslStream.ReadTimeout = 5000;
                     sslStream.WriteTimeout = 5000;
-                    client.sslStream = sslStream;
                     client.json = JsonSerializer.Deserialize<JsonToRecieve>(await ReadMessageAsync(sslStream));
+
+                    client.sslStream = sslStream;
+
+                    //byte[] buffer = new byte[1024];
+                    //int size = await sslStream.ReadAsync(buffer, 0, buffer.Length);
+                    //client.json = JsonSerializer.Deserialize<JsonToRecieve>(Encoding.UTF8.GetString(buffer, 0, size));
+
                     if (client.json.Command == "Autorization")
                     {
                         await AutorizationAsync(client);
@@ -65,6 +72,7 @@ namespace DB_server
             {
                 await Console.Out.WriteLineAsync(ex.Message);
             }
+            await Console.Out.WriteLineAsync("Disconnected");
         }
 
         static async Task AutorizationAsync(Client client)
@@ -97,7 +105,7 @@ namespace DB_server
                 }
                 else
                 {
-                    string directory = new Guid(client.json.Email).ToString();
+                    string directory = Guid.NewGuid().ToString();
                     context.Users.Add(new User()
                     {
                         Email = client.json.Email,
@@ -141,6 +149,7 @@ namespace DB_server
     {
         public TcpClient tcpClient;
         public SslStream sslStream;
+        //public NetworkStream sslStream;
         public JsonToRecieve json;
 
         public Client(TcpClient tcpClient)

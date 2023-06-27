@@ -26,7 +26,7 @@
 
         <StackPanel x:Name="loginStackPanel" Visibility="Collapsed" Margin="307,82,204,112">
 
-            <Label Content="Login" Width="216" Height="39" FontSize="14" />
+            <Label Content="Email" Width="216" Height="39" FontSize="14" />
             <TextBox x:Name="LoginTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
             <Label Content="Password" Width="214" Height="33"/>
             <PasswordBox x:Name="LoginPassword" Width="216"/>
@@ -35,11 +35,11 @@
         </StackPanel>
         <StackPanel x:Name="SingUpStackPanel" Visibility="Collapsed" Margin="307,82,204,91">
 
-            <Label Content="Login" Width="216" Height="39" FontSize="14" />
+            <Label Content="Email" Width="216" Height="39" FontSize="14" />
             <TextBox x:Name="SingTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
             <Label Content="Password" Width="214" Height="33"/>
             <PasswordBox x:Name="SingPassword" Width="216"/>
-            <Label Content="E-mail" Width="216" Height="39" FontSize="14" />
+            <Label Content="Del this pls" Width="216" Height="39" FontSize="14" />
             <TextBox x:Name="SingEmailTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
             <Button x:Name="okSingButton" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Ok" Width="106" Margin="30" Click="okSingButton_Click"/>
 

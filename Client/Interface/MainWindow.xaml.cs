@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using ControllerDLL;
+
 namespace Interface
 {
     /// <summary>
@@ -30,12 +32,7 @@ namespace Interface
            
             InitializeComponent();
 
-
             //listViewSourse(strtest);
-
-
-            
-            
             
         }
         void addListViewEl(string str,string name)
@@ -154,13 +151,12 @@ namespace Interface
             LoginPassword.Clear();
             SingTextBox.Text = "";
             SingPassword.Clear();
-
         }
 
-        private void okLoginButton_Click(object sender, RoutedEventArgs e)
+        private async void okLoginButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
-            if (true)
+            //MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
+            if (await Controller.AutorizationAsync(LoginTextBox.Text, LoginPassword.Password))
             {
                 listViewSourse(strtest);
                 loginStackPanel.Visibility = Visibility.Collapsed;
@@ -173,15 +169,15 @@ namespace Interface
                 current_User.Content = LoginTextBox.Text;
                 Out.Visibility = Visibility.Visible;
             }
-
-
+            else
+                MessageBox.Show("Неправльный email или пароль");
         }
 
-        private void okSingButton_Click(object sender, RoutedEventArgs e)
+        private async void okSingButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Login: " + SingTextBox.Text + "\nPassword: " + SingPassword.Password +"\nE-mail: "+SingEmailTextBox.Text);
+            //MessageBox.Show("Login: " + SingTextBox.Text + "\nPassword: " + SingPassword.Password +"\nE-mail: "+SingEmailTextBox.Text);
             //если прослойка вернула true
-            if (true)
+            if (await Controller.RegistrationAsync(SingTextBox.Text, SingPassword.Password))
             {
                 listViewSourse(strtest);
                 SingUpStackPanel.Visibility = Visibility.Collapsed;
@@ -193,8 +189,9 @@ namespace Interface
                 current_User.Visibility = Visibility.Visible;
                 current_User.Content = SingTextBox.Text;
                 Out.Visibility = Visibility.Visible;
-
             }
+            else
+                MessageBox.Show("Email уже зарегистрирован");
         }
 
         private void viewList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -206,8 +203,6 @@ namespace Interface
                 //запускается метод с прослойки для который вернет список файлов в данной папке
                 MessageBox.Show(a.Text);
             }
-
-            
         }
     }
 }
