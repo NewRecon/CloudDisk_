@@ -17,8 +17,8 @@ namespace File_Server
 {
     internal class Program
     {
-        static TcpListener file_Server = new TcpListener(IPAddress.Parse("192.168.0.103"), 8888);
-        static string pathMainDirectory = @"C:\Users\gamej\Desktop\";
+        static TcpListener file_Server = new TcpListener(IPAddress.Parse("192.168.0.99"), 8888);
+        static string pathMainDirectory = @"C:\Users\99max\Desktop\CloudDisk\Server\File_server\test";
         static async Task Main(string[] args)
         {
 
@@ -47,8 +47,6 @@ namespace File_Server
                 int count = await ns.ReadAsync(getBytes, 0, getBytes.Length);
                 string result = Encoding.UTF8.GetString(getBytes, 0, count);
                 var userRequest = JsonSerializer.Deserialize<JsonRequest>(result);
-
-
 
                 if (userRequest.Request == "Info")
                     await FileAndDirectoryInfoAsync(ns, userRequest.Key);
@@ -155,4 +153,3 @@ namespace File_Server
         public string DirectoryInfo { get; set; }
     }
 }
-

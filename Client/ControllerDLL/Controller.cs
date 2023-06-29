@@ -13,13 +13,15 @@ namespace ControllerDLL
 {
     public class Controller
     {
-        static IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
+        // Сервер БД
+        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
+        // Файловый сервер
+        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 8888);
+
         static TcpClient client;
 
-        static async Task Main(string[] args)
-        {
-            //await AutorizationAsync("abobus", "123321");
-        }
+        // Для хранения мэйн директории пользователся
+        static JsonToRecieve toRecieve = null;
 
         // заглушка
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -43,7 +45,7 @@ namespace ControllerDLL
             JsonToRecieve toRecieve = null;
             try
             {
-                client.Connect(endPoint);
+                client.Connect(endPointDB);
                 using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
                 //using (NetworkStream sslStream = client.GetStream())
                 {
@@ -79,10 +81,9 @@ namespace ControllerDLL
         public static async Task<bool> RegistrationAsync(string email, string password)
         {
             client = new TcpClient();
-            JsonToRecieve toRecieve = null;
             try
             {
-                client.Connect(endPoint);
+                client.Connect(endPointDB);
                 using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
                 //using (NetworkStream sslStream = client.GetStream())
                 {
@@ -114,8 +115,34 @@ namespace ControllerDLL
             else
                 return true;
         }
+
+        // отображение всего диска
+        public static async Task<string> ShowAllFileInfoAsync(string path)
+        {
+            client = new TcpClient();
+            try
+            {
+                client.Connect(endPointFile);
+                using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
+                {
+                    sslStream.AuthenticateAsClient("CloudDiskCer");
+
+                    //
+
+                    sslStream.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+
+            return "";
+        }
+
+
     }
 
+    // Для отправки на сервер БД
     public class JsonToSend
     {
         public string Command { get; set; }
@@ -123,8 +150,10 @@ namespace ControllerDLL
         public string Password { get; set; }
     }
 
+    // Для получения инфы с БД отправки файловуму серверу
     public class JsonToRecieve
     {
+        public string Command { get; set; }
         public string Directory { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace DB_server
     internal class Program
     {
         static TcpListener listener = new TcpListener(IPAddress.Any, 9000);
-        static X509Certificate2 serverCertificate = null;
+        static X509Certificate serverCertificate = null;
 
         static async Task Main(string[] args)
         {
