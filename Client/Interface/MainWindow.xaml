@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Interface"
         mc:Ignorable="d"
         Title="CloudDisk_" Height="550" Width="840"
+        Style="{StaticResource RoundWindowTemplate}"
         >
     <Grid x:Name="grid">
 
