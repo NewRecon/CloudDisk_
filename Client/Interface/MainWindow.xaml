@@ -18,10 +18,10 @@
             <ListView x:Name="viewList" Visibility="Collapsed" Margin="0,36,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" MouseDoubleClick="viewList_MouseDoubleClick">
 
             </ListView>
-            <Button x:Name="SaveFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Скачать" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,101,0,0" Click="SaveFile_Click"/>
-            <Button x:Name="DowlnFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="YellowGreen" Content="Загрузить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,135,0,0" Click="DowlnFile_Click"/>
-            <Button x:Name="DeleteFile" Visibility="Collapsed" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Red" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,170,0,0" Click="DeleteFile_Click"/>
-
+            <Button x:Name="SaveFile" Visibility="Visible" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Green" Content="Скачать" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,100,0,0" Click="SaveFile_Click"/>
+            <Button x:Name="DowlnFile" Visibility="Visible" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="YellowGreen" Content="Загрузить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,135,0,0" Click="DowlnFile_Click"/>
+            <Button x:Name="DeleteFile" Visibility="Visible" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Red" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,170,0,0" Click="DeleteFile_Click"/>
+            <Button x:Name="CreateDirectory" Visibility="Visible" Grid.Column="1" Style="{StaticResource RoundButtonTemplate}" Background="Yellow" Content="Создать папку" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="93" Margin="20,205,0,0" Click="CreateDirectory_Click"/>
 
         </Grid>
 

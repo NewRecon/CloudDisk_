@@ -31,7 +31,6 @@ namespace Interface
         {
            
             InitializeComponent();
-
             //listViewSourse(strtest);
             
         }
@@ -187,6 +186,7 @@ namespace Interface
 
         private async void okLoginButton_Click(object sender, RoutedEventArgs e)
         {
+            //listViewSourse(strtest);
             //MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
             if (await Controller.AutorizationAsync(LoginTextBox.Text, LoginPassword.Password))
             {
@@ -234,6 +234,17 @@ namespace Interface
             {
                 //запускается метод с прослойки для который вернет список файлов в данной папке
                 MessageBox.Show(a.Text);
+            }
+        }
+
+        private void CreateDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Directory.CreateDirectory(saveFileDialog.FileName);
+                MessageBox.Show($"Путь: {saveFileDialog.FileName}\nИмя: {saveFileDialog.SafeFileName}");
             }
         }
     }
