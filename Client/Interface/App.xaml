@@ -17,5 +17,18 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="RoundWindowTemplate" TargetType="Window">
+            <Setter Property="Background" Value="Aqua"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Window">
+                        <Border CornerRadius="10" Background="{ TemplateBinding Background}" BorderThickness="3">
+                            <ContentPresenter></ContentPresenter>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>
