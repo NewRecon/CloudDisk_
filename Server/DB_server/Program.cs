@@ -10,6 +10,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using DB_server.DataModel;
+using System.IO;
 
 namespace DB_server
 {
@@ -22,7 +23,7 @@ namespace DB_server
         {
             // запустить от имени администратора
             #region SSL
-            serverCertificate = new X509Certificate2(@"C:\Users\99max\Desktop\CloudDisk\Server\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
+            serverCertificate = new X509Certificate2($@"{Directory.GetCurrentDirectory()}\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
             //X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             //store.Open(OpenFlags.ReadOnly);
             //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);

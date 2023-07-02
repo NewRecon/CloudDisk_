@@ -14,7 +14,7 @@ namespace ControllerDLL
     public class Controller
     {
         // Сервер БД
-        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
+        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 9000);
         // Файловый сервер
         static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 8888);
 
