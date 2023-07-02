@@ -10,6 +10,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using DB_server.DataModel;
+using System.IO;
 
 namespace DB_server
 {
@@ -22,7 +23,7 @@ namespace DB_server
         {
             // запустить от имени администратора
             #region SSL
-            serverCertificate = new X509Certificate2(@"C:\Users\99max\Desktop\CloudDisk\Server\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
+            serverCertificate = new X509Certificate2(Directory.GetCurrentDirectory()+@"\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
             //X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             //store.Open(OpenFlags.ReadOnly);
             //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);
@@ -54,18 +55,10 @@ namespace DB_server
 
                     client.sslStream = sslStream;
 
-                    //byte[] buffer = new byte[1024];
-                    //int size = await sslStream.ReadAsync(buffer, 0, buffer.Length);
-                    //client.json = JsonSerializer.Deserialize<JsonToRecieve>(Encoding.UTF8.GetString(buffer, 0, size));
-
                     if (client.json.Command == "Autorization")
-                    {
-                        await AutorizationAsync(client);
-                    }
+                        await AuthorizationAsync(client);
                     else if (client.json.Command == "Registration")
-                    {
                         await RegistartionAsync(client);
-                    }
                 }
             }
             catch(Exception ex)
@@ -75,23 +68,20 @@ namespace DB_server
             await Console.Out.WriteLineAsync("Disconnected");
         }
 
-        static async Task AutorizationAsync(Client client)
+        static async Task AuthorizationAsync(Client client)
         {
             using (UserContext context = new UserContext())
             {
                 User user = context.Users.FirstOrDefault(c => c.Email == client.json.Email && c.Password == client.json.Password);
                 byte[] messageToSend;
                 if (user != null)
-                {
-                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new JsonToSend() {Directory = user.Directory}));
-                }
+                    messageToSend = Encoding.UTF8.GetBytes(user.Directory);
                 else
-                {
-                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new JsonToSend() { Directory = "NaN" }));
-                }
+                    messageToSend = Encoding.UTF8.GetBytes("NaN");
 
                 await client.sslStream.WriteAsync(messageToSend, 0, messageToSend.Length);
             }
+            await Console.Out.WriteLineAsync("Autorization");
         }
 
         static async Task RegistartionAsync(Client client)
@@ -100,9 +90,7 @@ namespace DB_server
             {
                 byte[] messageToSend;
                 if (context.Users.FirstOrDefault(c => c.Email == client.json.Email && c.Password == client.json.Password) != null)
-                {
-                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new JsonToSend() { Directory = "NaN" }));
-                }
+                    messageToSend = Encoding.UTF8.GetBytes("NaN");
                 else
                 {
                     string directory = Guid.NewGuid().ToString();
@@ -114,16 +102,12 @@ namespace DB_server
                     });
                     context.SaveChanges();
 
-                    JsonToSend toSend = new JsonToSend()
-                    {
-                        Directory = directory
-                    };
-
-                    messageToSend = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toSend));
+                    messageToSend = Encoding.UTF8.GetBytes(directory);
                 }
 
                 await client.sslStream.WriteAsync(messageToSend, 0, messageToSend.Length);
             }
+            await Console.Out.WriteLineAsync("Registration");
         }
 
         static async Task<string> ReadMessageAsync(SslStream sslStream)
@@ -140,16 +124,11 @@ namespace DB_server
         public string Email { get; set; }
         public string Password { get; set; }
     }
-    class JsonToSend
-    {
-        public string Directory { get; set; }
-    }
 
     class Client
     {
         public TcpClient tcpClient;
         public SslStream sslStream;
-        //public NetworkStream sslStream;
         public JsonToRecieve json;
 
         public Client(TcpClient tcpClient)

@@ -17,17 +17,16 @@ namespace File_Server
 {
     internal class Program
     {
-        static TcpListener file_Server = new TcpListener(IPAddress.Parse("192.168.0.99"), 8888);
-        static string pathMainDirectory = @"C:\Users\99max\Desktop\CloudDisk\Server\File_server\test";
+        static TcpListener file_Server = new TcpListener(IPAddress.Any, 8888);
+        static string pathMainDirectory = Directory.GetCurrentDirectory() + @"\test\";
         static async Task Main(string[] args)
         {
 
             file_Server.Start();
+            await Console.Out.WriteLineAsync("Started");
             var t = Task.Run(() => RequestsClientsAsync());
             t.Wait();
         }
-
-
 
         static async Task RequestsClientsAsync()
         {
@@ -35,6 +34,7 @@ namespace File_Server
             {
                 await Task.Yield();
                 TcpClient client = await file_Server.AcceptTcpClientAsync();
+                await Console.Out.WriteLineAsync("Connected");
                 _ = Task.Run(() => GetAndSendRequestAsync(client));
             }
         }
@@ -48,28 +48,65 @@ namespace File_Server
                 string result = Encoding.UTF8.GetString(getBytes, 0, count);
                 var userRequest = JsonSerializer.Deserialize<JsonRequest>(result);
 
+                await Console.Out.WriteLineAsync("userRequest.Request - " + userRequest.Request);
+                await Console.Out.WriteLineAsync("userRequest.Key - " + userRequest.Key);
+                await Console.Out.WriteLineAsync("userRequest.Path - " + userRequest.Path);
+
                 if (userRequest.Request == "Info")
+                {
+                    await Console.Out.WriteLineAsync("Info");
                     await FileAndDirectoryInfoAsync(ns, userRequest.Key);
+                }
+                    
 
                 else if (userRequest.Request == "CreateDirectory")
+                {
+                    await Console.Out.WriteLineAsync("CreateDirectory");
                     await CreateDirectoryAsync(ns, userRequest.Path, userRequest.Key);
+                }
+                    
 
                 else if (userRequest.Request == "DeleteFile")
+                {
+                    await Console.Out.WriteLineAsync("DeleteFile");
                     await FileDeleteAsync(ns, userRequest.Path, userRequest.Key);
+                }
+                    
 
                 else if (userRequest.Request == "DeleteDirectory")
+                {
+                    await Console.Out.WriteLineAsync("DeleteDirectory");
                     await DeleteDirectoryAsync(ns, userRequest.Path, userRequest.Key);
+                }
+                    
 
                 else if (userRequest.Request == "Upload")
+                {
+                    await Console.Out.WriteLineAsync("Upload");
                     await UploadFileAsync(ns, userRequest.Path, userRequest.Key);
+                }
+                    
 
                 else if (userRequest.Request == "Download")
+                {
+                    await Console.Out.WriteLineAsync("Download");
                     await DownloadFileAsync(ns, userRequest.Path);
+                }
+                    
+
+                else if (userRequest.Request == "Registration")
+                {
+                    await Console.Out.WriteLineAsync("Registration");
+                    await CreateMainDirectoryAsync(ns, userRequest.Key);
+                }
             }
         }
 
         static async Task UploadFileAsync(NetworkStream ns, string path, string key)
         {
+            byte[] answer = Encoding.UTF8.GetBytes("ok");
+            await ns.WriteAsync(answer, 0, answer.Length);
+
             byte[] bytes = new byte[4096];
             using (FileStream fs = new FileStream(pathMainDirectory + path, FileMode.OpenOrCreate))
             {
@@ -109,13 +146,13 @@ namespace File_Server
                 directoryInfo.Append(filename.Substring(snipDirectoryPath) + ";");
             }
 
-            var allInfo = JsonSerializer.Serialize<JsonInfo>(new JsonInfo()
-            {
-                FileInfo = fileInfo.ToString(),
-                DirectoryInfo = directoryInfo.ToString()
-            });
+            //var allInfo = JsonSerializer.Serialize<JsonInfo>(new JsonInfo()
+            //{
+            //    FileInfo = fileInfo.ToString(),
+            //    DirectoryInfo = directoryInfo.ToString()
+            //});
 
-            byte[] data = Encoding.UTF8.GetBytes(allInfo);
+            byte[] data = Encoding.UTF8.GetBytes(fileInfo.ToString() + directoryInfo.ToString());
             await ns.WriteAsync(data, 0, data.Length);
 
             Console.WriteLine("Файл предан");
@@ -124,18 +161,28 @@ namespace File_Server
         static async Task CreateDirectoryAsync(NetworkStream ns, string path, string key)
         {
             Directory.CreateDirectory(pathMainDirectory + path);
+            await Console.Out.WriteLineAsync("CreateDirectoryAsync");
+            await FileAndDirectoryInfoAsync(ns, key);
+        }
+
+        static async Task CreateMainDirectoryAsync(NetworkStream ns, string key)
+        {
+            Directory.CreateDirectory(pathMainDirectory + key);
+            await Console.Out.WriteLineAsync("CreateMainDirectoryAsync");
             await FileAndDirectoryInfoAsync(ns, key);
         }
 
         static async Task FileDeleteAsync(NetworkStream ns, string path, string key)
         {
             File.Delete(pathMainDirectory + path);
+            await Console.Out.WriteLineAsync("FileDeleteAsync");
             await FileAndDirectoryInfoAsync(ns, key);
         }
 
         static async Task DeleteDirectoryAsync(NetworkStream ns, string path, string key)
         {
             Directory.Delete(pathMainDirectory + path);
+            await Console.Out.WriteLineAsync("DeleteDirectoryAsync");
             await FileAndDirectoryInfoAsync(ns, key);
         }
     }

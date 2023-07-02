@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ControllerDLL
 {
@@ -21,10 +22,12 @@ namespace ControllerDLL
         static TcpClient client;
 
         // Для хранения мэйн директории пользователся
-        static JsonToRecieve toRecieve = null;
+        static JsonToRecieveFromDBAndSentToFileServer toRecieve = new JsonToRecieveFromDBAndSentToFileServer();
+
+        static string currentDirectory = "";
 
         // заглушка
-        public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             return true;
             //if (sslPolicyErrors == SslPolicyErrors.None)
@@ -34,7 +37,7 @@ namespace ControllerDLL
             //return false;
         }
 
-        static public async Task<bool> AutorizationAsync(string email, string password)
+        public static async Task<bool> AuthorizationAsync(string email, string password)
         {
             #region SSL
             //X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
@@ -42,7 +45,6 @@ namespace ControllerDLL
             //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "CloudDiskCer", false);
             #endregion
             client = new TcpClient();
-            JsonToRecieve toRecieve = null;
             try
             {
                 client.Connect(endPointDB);
@@ -63,7 +65,8 @@ namespace ControllerDLL
                     messsage = new byte[1024];
                     int recievedMessageSize = await sslStream.ReadAsync(messsage, 0, messsage.Length);
                     string recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
-                    toRecieve = JsonSerializer.Deserialize<JsonToRecieve>(recievedMessage);
+                    toRecieve.Key = recievedMessage;
+                    currentDirectory = toRecieve.Key;
 
                     sslStream.Flush();
                 }
@@ -72,7 +75,7 @@ namespace ControllerDLL
             }
             catch (Exception ex){}
 
-            if (toRecieve.Directory == "NaN")
+            if (toRecieve.Key == "NaN")
                 return false;
             else
                 return true;
@@ -101,7 +104,8 @@ namespace ControllerDLL
                     messsage = new byte[1024];
                     int recievedMessageSize = await sslStream.ReadAsync(messsage, 0, messsage.Length);
                     string recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
-                    toRecieve = JsonSerializer.Deserialize<JsonToRecieve>(recievedMessage);
+                    toRecieve.Key = recievedMessage;
+                    currentDirectory = toRecieve.Key;
 
                     sslStream.Flush();
                 }
@@ -110,7 +114,7 @@ namespace ControllerDLL
             }
             catch (Exception ex) { }
 
-            if (toRecieve.Directory == "NaN")
+            if (toRecieve.Key == "NaN")
                 return false;
             else
                 return true;
@@ -119,27 +123,129 @@ namespace ControllerDLL
         // отображение всего диска
         public static async Task<string> ShowAllFileInfoAsync(string path)
         {
+            currentDirectory = path;
             client = new TcpClient();
+            string recievedMessage = "";
             try
             {
                 client.Connect(endPointFile);
-                using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
+                using (NetworkStream ns = client.GetStream())
                 {
-                    sslStream.AuthenticateAsClient("CloudDiskCer");
+                    toRecieve.Request = "Info";
+                    toRecieve.Path = currentDirectory;
 
-                    //
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
 
-                    sslStream.Flush();
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
+                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+
+                    ns.Flush();
                 }
                 client.Close();
                 client.Dispose();
             }
             catch (Exception ex) { }
 
-            return "";
+            return recievedMessage;
         }
 
+        // Создание директории при регистрации
+        public static async Task<string> CreateMainDirectoryAsync()
+        {
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "Registration";
+                    toRecieve.Path = "";
 
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
+                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+
+            return recievedMessage;
+        }
+
+        // Создание директории
+        public static async Task<string> CreateDirectoryAsync(string path)
+        {
+            currentDirectory = path;
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "CreateDirectory";
+                    toRecieve.Path = currentDirectory;
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
+                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+
+            return recievedMessage;
+        }
+
+        public static async Task<string> UploadFileAsync(string path, string file)
+        {
+            currentDirectory = path;
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "Upload";
+                    toRecieve.Path = currentDirectory;
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    await ns.ReadAsync(messsage,0, messsage.Length);
+
+                    byte[] data = File.ReadAllBytes(file);
+                    await ns.WriteAsync(data,0,data.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
+                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+
+            return recievedMessage;
+        }
     }
 
     // Для отправки на сервер БД
@@ -151,9 +257,10 @@ namespace ControllerDLL
     }
 
     // Для получения инфы с БД отправки файловуму серверу
-    public class JsonToRecieve
+    public class JsonToRecieveFromDBAndSentToFileServer
     {
-        public string Command { get; set; }
-        public string Directory { get; set; }
+        public string Request { get; set; }
+        public string Key { get; set; }
+        public string Path { get; set; }
     }
 }

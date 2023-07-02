@@ -23,8 +23,13 @@ namespace Interface
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
+
     public partial class MainWindow : Window
     {
+        // Сделай, пожалуйста, чьлбы при открытии папки сюда записывалось ее название.
+        // Если открыть папку в папке, то будет полноценный путь. в виде "createdFolder1\createdFolder2"
+        string CurrentDirrectory = "";
+
         Dictionary<string, Image> images = new Dictionary<string, Image>();
         //public string strtest = "/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/Battle.net-Setup.exe;4838352;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик (1).txt;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/tsetup-x64.4.6.5.exe;40488912;";
         public MainWindow()
@@ -120,7 +125,8 @@ namespace Interface
             }
         }
 
-        private void DowlnFile_Click(object sender, RoutedEventArgs e)
+        // Поправь название DownloadFile
+        private async void DowlnFile_Click(object sender, RoutedEventArgs e)
         {
             if (viewList.SelectedItem != null)
             {
@@ -128,6 +134,7 @@ namespace Interface
                 if (ofd.ShowDialog() == true)
                 {
                     MessageBox.Show(ofd.FileName);
+                    //await Controller.UploadFileAsync("", ofd.FileName);
                 }
             }
         }
@@ -156,9 +163,9 @@ namespace Interface
         private async void okLoginButton_Click(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
-            if (await Controller.AutorizationAsync(LoginTextBox.Text, LoginPassword.Password))
+            if (await Controller.AuthorizationAsync(LoginTextBox.Text, LoginPassword.Password))
             {
-                //listViewSourse(await Controller.ShowAllFileInfoAsync( "ТУТ НАЗВАНИЕ ВЫБРАННОЙ ПАПКИ, ЕСЛИ ОТОБРАЖАЕМ КОРНЕВУЮ ПАПКУ, ТО ОСТАВЛЯТЬ ПУСТЫМ" ));
+                listViewSourse(await Controller.ShowAllFileInfoAsync(""));
                 loginStackPanel.Visibility = Visibility.Collapsed;
                 SaveFile.Visibility = Visibility.Visible;
                 DowlnFile.Visibility = Visibility.Visible;
@@ -179,7 +186,7 @@ namespace Interface
             //если прослойка вернула true
             if (await Controller.RegistrationAsync(SingTextBox.Text, SingPassword.Password))
             {
-                //listViewSourse(await Controller.ShowAllFileInfoAsync( "ТУТ НАЗВАНИЕ ВЫБРАННОЙ ПАПКИ, ЕСЛИ ОТОБРАЖАЕМ КОРНЕВУЮ ПАПКУ, ТО ОСТАВЛЯТЬ ПУСТЫМ" ));
+                listViewSourse(await Controller.CreateMainDirectoryAsync());
                 SingUpStackPanel.Visibility = Visibility.Collapsed;
                 SaveFile.Visibility = Visibility.Visible;
                 DowlnFile.Visibility = Visibility.Visible;
