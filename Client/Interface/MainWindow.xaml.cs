@@ -36,32 +36,63 @@ namespace Interface
         {
            
             InitializeComponent();
-
             //listViewSourse(strtest);
             
         }
         void addListViewEl(string str,string name)
         {
-            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes($"{str}.ico")))
+            if (File.Exists($"{str}.ico"))
             {
-                StackPanel s = new StackPanel();
-                s.Orientation = Orientation.Horizontal;
-                Image img = new Image();
-                TextBlock tb = new TextBlock();
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = ms;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                img.Source = bitmapImage;
-                img.Height = 16; img.Width = 16;
+                using (MemoryStream ms = new MemoryStream(File.ReadAllBytes($"{str}.ico")))
+                {
+                    StackPanel s = new StackPanel();
+                    s.Orientation = Orientation.Horizontal;
+                    Image img = new Image();
+                    TextBlock tb = new TextBlock();
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    img.Source = bitmapImage;
+                    img.Height = 16; img.Width = 16;
 
-                tb.FontSize = 16;
-                tb.Text = $" {name}";
-                s.Children.Add(img);
-                s.Children.Add(tb);
-                viewList.Items.Add(s);
-                viewList.Visibility = Visibility.Visible;
+                    tb.FontSize = 16;
+                    tb.Text = $" {name}";
+                    s.Children.Add(img);
+                    s.Children.Add(tb);
+                    viewList.Items.Add(s);
+                    viewList.Visibility = Visibility.Visible;
+                    ms.Close();
+                    ms.Dispose();
+                }
+
+            }
+            else
+            {
+                using (MemoryStream ms = new MemoryStream(File.ReadAllBytes($"unknown.ico")))
+                {
+                    StackPanel s = new StackPanel();
+                    s.Orientation = Orientation.Horizontal;
+                    Image img = new Image();
+                    TextBlock tb = new TextBlock();
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    img.Source = bitmapImage;
+                    img.Height = 16; img.Width = 16;
+
+                    tb.FontSize = 16;
+                    tb.Text = $" {name}";
+                    s.Children.Add(img);
+                    s.Children.Add(tb);
+                    viewList.Items.Add(s);
+                    viewList.Visibility = Visibility.Visible;
+                    ms.Close();
+                    ms.Dispose();
+                }
             }
         }
 
@@ -87,7 +118,7 @@ namespace Interface
                     buf = massin[i].Substring(massin[i].LastIndexOf('/') + 1);
                     if(buf.Contains("."))
                     {
-                        addListViewEl(buf.Substring(buf.LastIndexOf(".")+1),buf);
+                        addListViewEl(buf.Substring(buf.LastIndexOf(".") + 1),buf);
                     }
                     else
                     {
@@ -95,8 +126,6 @@ namespace Interface
                     }
                 }
             }
-
-
         }
 
         //Возвращает текст выбранного элемента listview
@@ -134,6 +163,8 @@ namespace Interface
                 if (ofd.ShowDialog() == true)
                 {
                     MessageBox.Show(ofd.FileName);
+
+                    //await Controller.UploadFileAsync(дректория куда будет скачиваться, название файла как отображается в интерфйесе)
                     //await Controller.UploadFileAsync("", ofd.FileName);
                 }
             }
@@ -162,6 +193,7 @@ namespace Interface
 
         private async void okLoginButton_Click(object sender, RoutedEventArgs e)
         {
+            //listViewSourse(strtest);
             //MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
             if (await Controller.AuthorizationAsync(LoginTextBox.Text, LoginPassword.Password))
             {
@@ -209,6 +241,17 @@ namespace Interface
             {
                 //запускается метод с прослойки для который вернет список файлов в данной папке
                 MessageBox.Show(a.Text);
+            }
+        }
+
+        private void CreateDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Directory.CreateDirectory(saveFileDialog.FileName);
+                MessageBox.Show($"Путь: {saveFileDialog.FileName}\nИмя: {saveFileDialog.SafeFileName}");
             }
         }
     }

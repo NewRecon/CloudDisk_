@@ -23,7 +23,11 @@ namespace DB_server
         {
             // запустить от имени администратора
             #region SSL
+<<<<<<< HEAD
             serverCertificate = new X509Certificate2(Directory.GetCurrentDirectory()+@"\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
+=======
+            serverCertificate = new X509Certificate2($@"{Directory.GetCurrentDirectory()}\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
+>>>>>>> 2fd1ea3c4dccaa236e2b05ee8e098c17578f5391
             //X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             //store.Open(OpenFlags.ReadOnly);
             //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);

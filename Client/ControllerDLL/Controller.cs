@@ -181,6 +181,7 @@ namespace ControllerDLL
             return recievedMessage;
         }
 
+        // затестить
         // Создание директории
         public static async Task<string> CreateDirectoryAsync(string path)
         {
@@ -212,6 +213,8 @@ namespace ControllerDLL
             return recievedMessage;
         }
 
+        // затестить
+        // Загрузка на диск
         public static async Task<string> UploadFileAsync(string path, string file)
         {
             currentDirectory = path;
@@ -246,6 +249,109 @@ namespace ControllerDLL
 
             return recievedMessage;
         }
+
+        // затестить
+        // Скачивание одного файла
+        public static async Task DownloadFileAsync(string path, string file)
+        {
+            currentDirectory = path;
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "Download";
+                    toRecieve.Path = currentDirectory;
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    byte[] bytes = new byte[4096];
+                    using (FileStream fs = new FileStream(currentDirectory + file.Substring(file.LastIndexOf(@"\") + 1), FileMode.OpenOrCreate))
+                    {
+                        var count = await ns.ReadAsync(bytes, 0, bytes.Length);
+                        while (count > 0)
+                        {
+                            await fs.WriteAsync(bytes, 0, count);
+                            if (count < 4096)
+                                break;
+                            count = await ns.ReadAsync(bytes, 0, bytes.Length);
+                        }
+                    }
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+        }
+
+        // затестить
+        // Удаление файла
+        public static async Task<string> DeleteFileAsync(string path, string file)
+        {
+            currentDirectory = path;
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "DeleteFile";
+                    toRecieve.Path = currentDirectory + file.Substring(file.LastIndexOf(@"\") + 1);
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
+                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+
+            return recievedMessage;
+        }
+
+        // затестить
+        // Удаление директории
+        public static async Task<string> DeleteDirectoryAsync(string path)
+        {
+            currentDirectory = path;
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "DeleteDirectory";
+                    toRecieve.Path = currentDirectory;
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    messsage = new byte[1024];
+                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
+                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+
+            return recievedMessage;
+        }
     }
 
     // Для отправки на сервер БД
@@ -256,7 +362,7 @@ namespace ControllerDLL
         public string Password { get; set; }
     }
 
-    // Для получения инфы с БД отправки файловуму серверу
+    // Для получения инфы с БД и для отправки файловуму серверу
     public class JsonToRecieveFromDBAndSentToFileServer
     {
         public string Request { get; set; }

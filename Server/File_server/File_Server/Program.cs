@@ -52,48 +52,49 @@ namespace File_Server
                 await Console.Out.WriteLineAsync("userRequest.Key - " + userRequest.Key);
                 await Console.Out.WriteLineAsync("userRequest.Path - " + userRequest.Path);
 
+                // +
                 if (userRequest.Request == "Info")
                 {
                     await Console.Out.WriteLineAsync("Info");
                     await FileAndDirectoryInfoAsync(ns, userRequest.Key);
                 }
-                    
 
+                // +
                 else if (userRequest.Request == "CreateDirectory")
                 {
                     await Console.Out.WriteLineAsync("CreateDirectory");
                     await CreateDirectoryAsync(ns, userRequest.Path, userRequest.Key);
                 }
                     
-
+                // +
                 else if (userRequest.Request == "DeleteFile")
                 {
                     await Console.Out.WriteLineAsync("DeleteFile");
                     await FileDeleteAsync(ns, userRequest.Path, userRequest.Key);
                 }
                     
-
+                // +
                 else if (userRequest.Request == "DeleteDirectory")
                 {
                     await Console.Out.WriteLineAsync("DeleteDirectory");
                     await DeleteDirectoryAsync(ns, userRequest.Path, userRequest.Key);
                 }
-                    
 
+                // +
                 else if (userRequest.Request == "Upload")
                 {
                     await Console.Out.WriteLineAsync("Upload");
                     await UploadFileAsync(ns, userRequest.Path, userRequest.Key);
                 }
                     
-
+                // проработать манифест для скачивания директории
                 else if (userRequest.Request == "Download")
                 {
                     await Console.Out.WriteLineAsync("Download");
                     await DownloadFileAsync(ns, userRequest.Path);
                 }
-                    
 
+                // +
                 else if (userRequest.Request == "Registration")
                 {
                     await Console.Out.WriteLineAsync("Registration");
@@ -128,6 +129,7 @@ namespace File_Server
             await ns.WriteAsync(file, 0, file.Length);
         }
 
+        // изменить манифест
         static async Task FileAndDirectoryInfoAsync(NetworkStream ns, string key)
         {
             IEnumerable<string> allFiles = Directory.EnumerateFiles(pathMainDirectory + key, "*.*", SearchOption.AllDirectories);
@@ -145,12 +147,6 @@ namespace File_Server
                 int snipDirectoryPath = filename.LastIndexOf(key);
                 directoryInfo.Append(filename.Substring(snipDirectoryPath) + ";");
             }
-
-            //var allInfo = JsonSerializer.Serialize<JsonInfo>(new JsonInfo()
-            //{
-            //    FileInfo = fileInfo.ToString(),
-            //    DirectoryInfo = directoryInfo.ToString()
-            //});
 
             byte[] data = Encoding.UTF8.GetBytes(fileInfo.ToString() + directoryInfo.ToString());
             await ns.WriteAsync(data, 0, data.Length);
@@ -192,11 +188,5 @@ namespace File_Server
         public string Request { get; set; }
         public string Key { get; set; }
         public string Path { get; set; }
-    }
-
-    public class JsonInfo
-    {
-        public string FileInfo { get; set; }
-        public string DirectoryInfo { get; set; }
     }
 }
