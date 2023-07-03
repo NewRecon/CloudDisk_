@@ -26,18 +26,11 @@ namespace Interface
 
     public partial class MainWindow : Window
     {
-        // Сделай, пожалуйста, чьлбы при открытии папки сюда записывалось ее название.
-        // Если открыть папку в папке, то будет полноценный путь. в виде "createdFolder1\createdFolder2"
         public string CurrentDirrectory = "";
         Dictionary<string, Image> images = new Dictionary<string, Image>();
-        //public string strtest = @"\home\leonid\Рабочий стол\serverTEST\publish\шабанов\DZ_WinForms_week_1_1.pdf;241366;\home\leonid\Рабочий стол\serverTEST\publish\шабанов\DZ_WinForms_week_1_1.pdf;241366;";
         public MainWindow()
-        {
-           
-            InitializeComponent();
-            //MessageBox.Show(Guid.NewGuid().ToString());
-            //listViewSourse(strtest);
-            
+        {          
+            InitializeComponent();          
         }
         void addListViewEl(string str,string name)
         {
@@ -96,15 +89,48 @@ namespace Interface
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            SingUpStackPanel.Visibility = Visibility.Collapsed;
-            loginStackPanel.Visibility = Visibility.Visible;
+            if (await Controller.AuthorizationAsync(LoginTextBox.Text, LoginPassword.Password))
+            {
+                BackVisible();
+                viewList.Visibility = Visibility.Visible;
+                listViewSourse(await Controller.ShowAllFileInfoAsync(""));
+                loginStackPanel.Visibility = Visibility.Collapsed;
+                if (viewList.Items.Count > 0)
+                {
+                    SaveFile.Visibility = Visibility.Visible;
+                    DeleteFile.Visibility = Visibility.Visible;
+                }
+                UploadFile.Visibility = Visibility.Visible;
+                loginButton.Visibility = Visibility.Collapsed;
+                SingButton.Visibility = Visibility.Collapsed;
+                current_User.Visibility = Visibility.Visible;
+                current_User.Content = LoginTextBox.Text;
+                Out.Visibility = Visibility.Visible;
+                CreateDirectory.Visibility = Visibility.Visible;
+            }
+            else
+                MessageBox.Show("Неправльный email или пароль");
         }
 
-        private void SingButton_Click(object sender, RoutedEventArgs e)
+        private async void SingButton_Click(object sender, RoutedEventArgs e)
         {
-            SingUpStackPanel.Visibility = Visibility.Visible;
+            if (await Controller.RegistrationAsync(LoginTextBox.Text, LoginPassword.Password))
+            {
+                BackVisible();
+                listViewSourse(await Controller.CreateMainDirectoryAsync());
+                UploadFile.Visibility = Visibility.Visible;
+                loginButton.Visibility = Visibility.Collapsed;
+                SingButton.Visibility = Visibility.Collapsed;
+                current_User.Visibility = Visibility.Visible;
+                current_User.Content = LoginTextBox.Text;
+                Out.Visibility = Visibility.Visible;
+                CreateDirectory.Visibility = Visibility.Visible;
+                viewList.Visibility = Visibility.Visible;
+            }
+            else
+                MessageBox.Show("Email уже зарегистрирован");
             loginStackPanel.Visibility = Visibility.Collapsed;
         }
         void listViewSourse(string str)
@@ -153,30 +179,26 @@ namespace Interface
                     await Controller.DownloadFileAsync(saveFileDialog.FileName, selectedListView());                   
                 }
             }
+            viewList.Items.Clear();
+            listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
         }
 
         private async void UploadFile_Click(object sender, RoutedEventArgs e)
         {
-            if (viewList.SelectedItem != null)
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() == true)
             {
-                OpenFileDialog ofd = new OpenFileDialog();
-                if (ofd.ShowDialog() == true)
-                {
-                    await Controller.UploadFileAsync(ofd.FileName, selectedListView());
-                    //await Controller.UploadFileAsync("", ofd.FileName);
-
-
-
-                }
+                await Controller.UploadFileAsync(ofd.FileName, ofd.FileName.Substring(ofd.FileName.LastIndexOf('\\') + 1));
             }
+            viewList.Items.Clear();
+            listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
         }
         private void CreateDirectory_Click(object sender, RoutedEventArgs e)
         {
             CreateDirectory.Visibility = Visibility.Collapsed;
             CreateDirectory_TextBox.Visibility = Visibility.Visible;
-            CreateDirectory_Ok.Visibility = Visibility.Visible;
-            
-
+            CreateDirectory_Ok.Visibility = Visibility.Visible;           
         }
 
         private async void CreateDirectory_Ok_Click(object sender, RoutedEventArgs e)
@@ -185,11 +207,19 @@ namespace Interface
             CreateDirectory.Visibility = Visibility.Visible;
             CreateDirectory_TextBox.Visibility = Visibility.Collapsed;
             CreateDirectory_Ok.Visibility = Visibility.Collapsed;
+            viewList.Items.Clear();
+            listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
 
         }
         private async void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
-            await Controller.DeleteFileAsync(CurrentDirrectory,selectedListView());
+            if (viewList.SelectedItem != null)
+            {
+                await Controller.DeleteFileAsync(CurrentDirrectory, selectedListView());
+                viewList.Items.Clear();
+                listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
+            }
+            else MessageBox.Show("Выбирите элемент для удаления");
         }
 
         private void Out_Click(object sender, RoutedEventArgs e)
@@ -205,8 +235,10 @@ namespace Interface
             CreateDirectory.Visibility = Visibility.Collapsed;
             LoginTextBox.Text = "";
             LoginPassword.Clear();
-            SingTextBox.Text = "";
-            SingPassword.Clear();
+            loginStackPanel.Visibility = Visibility.Visible;
+            CreateDirectory.Visibility= Visibility.Collapsed;
+            CreateDirectory_Ok.Visibility= Visibility.Collapsed;
+            CreateDirectory_TextBox.Visibility= Visibility.Collapsed;
         }
         private async void Button_Back_ClickAsync(object sender, RoutedEventArgs e)
         {
@@ -224,74 +256,17 @@ namespace Interface
             if (CurrentDirrectory.Length > 0)  Button_Back.Visibility = Visibility.Visible;
             else Button_Back.Visibility = Visibility.Collapsed;
         }
-
-        private async void okLoginButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-            //listViewSourse(strtest);
-            //MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
-            if (await Controller.AuthorizationAsync(LoginTextBox.Text, LoginPassword.Password))
-            {
-                BackVisible();
-                viewList.Visibility = Visibility.Visible;
-                //MessageBox.Show(await Controller.ShowAllFileInfoAsync(""));
-                listViewSourse(await Controller.ShowAllFileInfoAsync(""));
-                loginStackPanel.Visibility = Visibility.Collapsed;
-                if (viewList.Items.Count > 0)
-                {
-                    SaveFile.Visibility = Visibility.Visible;
-                    DeleteFile.Visibility = Visibility.Visible;
-                }
-                UploadFile.Visibility = Visibility.Visible;
-                loginButton.Visibility = Visibility.Collapsed;
-                SingButton.Visibility = Visibility.Collapsed;
-                current_User.Visibility = Visibility.Visible;
-                current_User.Content = LoginTextBox.Text;
-                Out.Visibility = Visibility.Visible;
-                CreateDirectory.Visibility = Visibility.Visible;
-            }
-            else
-                MessageBox.Show("Неправльный email или пароль");
-        }
-
-        private async void okSingButton_Click(object sender, RoutedEventArgs e)
-        {
-            //MessageBox.Show("Login: " + SingTextBox.Text + "\nPassword: " + SingPassword.Password +"\nE-mail: "+SingEmailTextBox.Text);
-            //если прослойка вернула true
-            if (await Controller.RegistrationAsync(SingTextBox.Text, SingPassword.Password))
-            {
-                BackVisible();
-                listViewSourse(await Controller.CreateMainDirectoryAsync());
-                SingUpStackPanel.Visibility = Visibility.Collapsed;
-                //SaveFile.Visibility = Visibility.Visible;
-                UploadFile.Visibility = Visibility.Visible;
-                //DeleteFile.Visibility = Visibility.Visible;
-                loginButton.Visibility = Visibility.Collapsed;
-                SingButton.Visibility = Visibility.Collapsed;
-                current_User.Visibility = Visibility.Visible;
-                current_User.Content = SingTextBox.Text;
-                Out.Visibility = Visibility.Visible;
-                CreateDirectory.Visibility = Visibility.Visible;
-            }
-            else
-                MessageBox.Show("Email уже зарегистрирован");
-        }
-
         private async void viewList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            //удалить "а" debug
             var a = ((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock;
             if(!(((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock).Text.Contains("."))
-            {
-                
+            {               
                 string buf = a.Text.Substring(1);
                 CurrentDirrectory += $@"\{buf}";
                 /*if (CurrentDirrectory == null)
                     CurrentDirrectory += a.Text;
                 else CurrentDirrectory += $@"\{a.Text}";*/
-
                 viewList.Items.Clear();
-                //MessageBox.Show(CurrentDirrectory);
                 listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
                 BackVisible();
             }
