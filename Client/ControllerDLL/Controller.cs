@@ -15,9 +15,9 @@ namespace ControllerDLL
     public class Controller
     {
         // Сервер БД
-        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
+        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 9000);
         // Файловый сервер
-        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 8888);
+        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 8888);
 
         static TcpClient client;
 
@@ -65,7 +65,7 @@ namespace ControllerDLL
                     messsage = new byte[1024];
                     int recievedMessageSize = await sslStream.ReadAsync(messsage, 0, messsage.Length);
                     string recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
-                    toRecieve.Key = recievedMessage;
+                    toRecieve.Key = recievedMessage;                   
                     currentDirectory = toRecieve.Key;
 
                     sslStream.Flush();
