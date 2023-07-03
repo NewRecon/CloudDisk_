@@ -28,14 +28,14 @@ namespace Interface
     {
         // Сделай, пожалуйста, чьлбы при открытии папки сюда записывалось ее название.
         // Если открыть папку в папке, то будет полноценный путь. в виде "createdFolder1\createdFolder2"
-        string CurrentDirrectory = "";
-
+        public string CurrentDirrectory = "";
         Dictionary<string, Image> images = new Dictionary<string, Image>();
-        //public string strtest = "/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/DZ_WinForms_week_1_1.pdf;241366;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/Battle.net-Setup.exe;4838352;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик (1).txt;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/котик;27;/home/leonid/Рабочий стол/serverTEST/publish/шабанов/tsetup-x64.4.6.5.exe;40488912;";
+        //public string strtest = @"\home\leonid\Рабочий стол\serverTEST\publish\шабанов\DZ_WinForms_week_1_1.pdf;241366;\home\leonid\Рабочий стол\serverTEST\publish\шабанов\DZ_WinForms_week_1_1.pdf;241366;";
         public MainWindow()
         {
            
             InitializeComponent();
+            //MessageBox.Show(Guid.NewGuid().ToString());
             //listViewSourse(strtest);
             
         }
@@ -115,7 +115,7 @@ namespace Interface
             {
                 if(i%2 == 0)
                 {
-                    buf = massin[i].Substring(massin[i].LastIndexOf('/') + 1);
+                    buf = massin[i].Substring(massin[i].LastIndexOf('\\') + 1);
                     if(buf.Contains("."))
                     {
                         addListViewEl(buf.Substring(buf.LastIndexOf(".") + 1),buf);
@@ -133,7 +133,7 @@ namespace Interface
         {
             var s = (StackPanel)viewList.SelectedItem;
 
-            return ((TextBlock)s.Children[1]).Text;
+            return (((TextBlock)s.Children[1]).Text).Substring(1);
         }
         //Удаление выбранного элемента из listview
         public void delSelectedListView()
@@ -141,21 +141,23 @@ namespace Interface
             viewList.Items.Remove(viewList.SelectedItem);
         }
 
-        private void SaveFile_Click(object sender, RoutedEventArgs e)
+        private async void SaveFile_Click(object sender, RoutedEventArgs e)
         {
             if (viewList.SelectedItem != null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    //MessageBox.Show(selectedListView());
+
+                    MessageBox.Show(selectedListView());
+                    //await Controller.UploadFileAsync(saveFileDialog.FileName, selectedListView());
+                    //await Controller.UploadFileAsync("", ofd.FileName);
 
                 }
             }
         }
 
-        // Поправь название DownloadFile
-        private async void DowlnFile_Click(object sender, RoutedEventArgs e)
+        private async void UploadFile_Click(object sender, RoutedEventArgs e)
         {
             if (viewList.SelectedItem != null)
             {
@@ -164,12 +166,23 @@ namespace Interface
                 {
                     MessageBox.Show(ofd.FileName);
 
-                    //await Controller.UploadFileAsync(дректория куда будет скачиваться, название файла как отображается в интерфйесе)
-                    //await Controller.UploadFileAsync("", ofd.FileName);
+                    
+                    
                 }
             }
         }
+        private void CreateDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            CreateDirectory.Visibility = Visibility.Collapsed;
+            CreateDirectory_TextBox.Visibility = Visibility.Visible;
+            CreateDirectory_Ok.Visibility = Visibility.Visible;
+        }
 
+        private void CreateDirectory_Ok_Click(object sender, RoutedEventArgs e)
+        {
+            //Имя созданной папки
+            MessageBox.Show(CreateDirectory_TextBox.Text);
+        }
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
             
@@ -180,7 +193,7 @@ namespace Interface
             current_User.Visibility = Visibility.Collapsed;
             Out.Visibility = Visibility.Collapsed;
             SaveFile.Visibility = Visibility.Collapsed;
-            DowlnFile.Visibility = Visibility.Collapsed;
+            UploadFile.Visibility = Visibility.Collapsed;
             DeleteFile.Visibility = Visibility.Collapsed;
             viewList.Visibility = Visibility.Collapsed;
             loginButton.Visibility = Visibility.Visible;
@@ -190,18 +203,41 @@ namespace Interface
             SingTextBox.Text = "";
             SingPassword.Clear();
         }
+        private async void Button_Back_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            if (CurrentDirrectory != "")
+            {
+                viewList.Items.Clear();
+                CurrentDirrectory = CurrentDirrectory.Remove(CurrentDirrectory.LastIndexOf("\\"));
+                listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
+                BackVisible();
+            }
+        }
+        void BackVisible()
+        {
+
+            if (CurrentDirrectory.Length > 0)  Button_Back.Visibility = Visibility.Visible;
+            else Button_Back.Visibility = Visibility.Collapsed;
+        }
 
         private async void okLoginButton_Click(object sender, RoutedEventArgs e)
         {
+            
             //listViewSourse(strtest);
             //MessageBox.Show("Login: "+LoginTextBox.Text+"\nPassword: "+ LoginPassword.Password);
             if (await Controller.AuthorizationAsync(LoginTextBox.Text, LoginPassword.Password))
             {
+                BackVisible();
+                viewList.Visibility = Visibility.Visible;
+                //MessageBox.Show(await Controller.ShowAllFileInfoAsync(""));
                 listViewSourse(await Controller.ShowAllFileInfoAsync(""));
                 loginStackPanel.Visibility = Visibility.Collapsed;
-                SaveFile.Visibility = Visibility.Visible;
-                DowlnFile.Visibility = Visibility.Visible;
-                DeleteFile.Visibility = Visibility.Visible;
+                if (viewList.Items.Count > 0)
+                {
+                    SaveFile.Visibility = Visibility.Visible;
+                    DeleteFile.Visibility = Visibility.Visible;
+                }
+                UploadFile.Visibility = Visibility.Visible;
                 loginButton.Visibility = Visibility.Collapsed;
                 SingButton.Visibility = Visibility.Collapsed;
                 current_User.Visibility = Visibility.Visible;
@@ -218,11 +254,12 @@ namespace Interface
             //если прослойка вернула true
             if (await Controller.RegistrationAsync(SingTextBox.Text, SingPassword.Password))
             {
+                BackVisible();
                 listViewSourse(await Controller.CreateMainDirectoryAsync());
                 SingUpStackPanel.Visibility = Visibility.Collapsed;
-                SaveFile.Visibility = Visibility.Visible;
-                DowlnFile.Visibility = Visibility.Visible;
-                DeleteFile.Visibility = Visibility.Visible;
+                //SaveFile.Visibility = Visibility.Visible;
+                UploadFile.Visibility = Visibility.Visible;
+                //DeleteFile.Visibility = Visibility.Visible;
                 loginButton.Visibility = Visibility.Collapsed;
                 SingButton.Visibility = Visibility.Collapsed;
                 current_User.Visibility = Visibility.Visible;
@@ -233,26 +270,25 @@ namespace Interface
                 MessageBox.Show("Email уже зарегистрирован");
         }
 
-        private void viewList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void viewList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //удалить "а" debug
             var a = ((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock;
             if(!(((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock).Text.Contains("."))
             {
-                //запускается метод с прослойки для который вернет список файлов в данной папке
-                MessageBox.Show(a.Text);
+                
+                string buf = a.Text.Substring(1);
+                CurrentDirrectory += $@"\{buf}";
+                /*if (CurrentDirrectory == null)
+                    CurrentDirrectory += a.Text;
+                else CurrentDirrectory += $@"\{a.Text}";*/
+
+                viewList.Items.Clear();
+                //MessageBox.Show(CurrentDirrectory);
+                listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
+                BackVisible();
             }
         }
 
-        private void CreateDirectory_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                Directory.CreateDirectory(saveFileDialog.FileName);
-                MessageBox.Show($"Путь: {saveFileDialog.FileName}\nИмя: {saveFileDialog.SafeFileName}");
-            }
-        }
     }
 }

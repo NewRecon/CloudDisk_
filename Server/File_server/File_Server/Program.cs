@@ -132,7 +132,7 @@ namespace File_Server
         // изменить манифест
         static async Task FileAndDirectoryInfoAsync(NetworkStream ns, string key)
         {
-            IEnumerable<string> allFiles = Directory.EnumerateFiles(pathMainDirectory + key, "*.*", SearchOption.AllDirectories);
+            IEnumerable<string> allFiles = Directory.EnumerateFiles(pathMainDirectory + key, "*.*", SearchOption.TopDirectoryOnly);//Заменил,для поиска в текущей директории
             StringBuilder fileInfo = new StringBuilder();
             foreach (string filename in allFiles)
             {
@@ -140,7 +140,7 @@ namespace File_Server
                 fileInfo.Append(filename.Substring(snipFilePath) + ";" + new FileInfo(filename).Length + ";");
             }
 
-            IEnumerable<string> allDirectory = Directory.EnumerateDirectories(pathMainDirectory + key, "*.*", SearchOption.AllDirectories);
+            IEnumerable<string> allDirectory = Directory.EnumerateDirectories(pathMainDirectory + key, "*.*", SearchOption.TopDirectoryOnly);//Заменил,для поиска в текущей директории
             StringBuilder directoryInfo = new StringBuilder();
             foreach (string filename in allDirectory)
             {
@@ -150,7 +150,6 @@ namespace File_Server
 
             byte[] data = Encoding.UTF8.GetBytes(fileInfo.ToString() + directoryInfo.ToString());
             await ns.WriteAsync(data, 0, data.Length);
-
             Console.WriteLine("Файл предан");
         }
 

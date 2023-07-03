@@ -17,6 +17,15 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="VisibleBack"  TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Text, ElementName=CurrentDirrectory}"
+                         Value="">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="RoundWindowTemplate" TargetType="Window">
             <Setter Property="Background" Value="Aqua"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -30,5 +39,26 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="StyleListView"  TargetType="{x:Type ListView}">
+            <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListView}">
+                        <Border CornerRadius="5">
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <!-- here we go -->
+            <Style.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Pink"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Pink"/>
+            </Style.Resources>
+        </Style>
+        
     </Application.Resources>
 </Application>
