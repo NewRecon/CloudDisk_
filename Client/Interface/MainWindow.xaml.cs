@@ -146,13 +146,11 @@ namespace Interface
             if (viewList.SelectedItem != null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Title = "dcs";
+                saveFileDialog.FileName = selectedListView();
                 if (saveFileDialog.ShowDialog() == true)
                 {
-
-                    MessageBox.Show(selectedListView());
-                    //await Controller.UploadFileAsync(saveFileDialog.FileName, selectedListView());
-                    //await Controller.UploadFileAsync("", ofd.FileName);
-
+                    await Controller.DownloadFileAsync(saveFileDialog.FileName, selectedListView());                   
                 }
             }
         }
@@ -164,10 +162,11 @@ namespace Interface
                 OpenFileDialog ofd = new OpenFileDialog();
                 if (ofd.ShowDialog() == true)
                 {
-                    MessageBox.Show(ofd.FileName);
+                    await Controller.UploadFileAsync(ofd.FileName, selectedListView());
+                    //await Controller.UploadFileAsync("", ofd.FileName);
 
-                    
-                    
+
+
                 }
             }
         }
@@ -176,16 +175,21 @@ namespace Interface
             CreateDirectory.Visibility = Visibility.Collapsed;
             CreateDirectory_TextBox.Visibility = Visibility.Visible;
             CreateDirectory_Ok.Visibility = Visibility.Visible;
+            
+
         }
 
-        private void CreateDirectory_Ok_Click(object sender, RoutedEventArgs e)
+        private async void CreateDirectory_Ok_Click(object sender, RoutedEventArgs e)
         {
-            //Имя созданной папки
-            MessageBox.Show(CreateDirectory_TextBox.Text);
+            await Controller.CreateDirectoryAsync(CurrentDirrectory + "\\" + CreateDirectory_TextBox.Text);
+            CreateDirectory.Visibility = Visibility.Visible;
+            CreateDirectory_TextBox.Visibility = Visibility.Collapsed;
+            CreateDirectory_Ok.Visibility = Visibility.Collapsed;
+
         }
-        private void DeleteFile_Click(object sender, RoutedEventArgs e)
+        private async void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
-            
+            await Controller.DeleteFileAsync(CurrentDirrectory,selectedListView());
         }
 
         private void Out_Click(object sender, RoutedEventArgs e)
@@ -198,6 +202,7 @@ namespace Interface
             viewList.Visibility = Visibility.Collapsed;
             loginButton.Visibility = Visibility.Visible;
             SingButton.Visibility = Visibility.Visible;
+            CreateDirectory.Visibility = Visibility.Collapsed;
             LoginTextBox.Text = "";
             LoginPassword.Clear();
             SingTextBox.Text = "";
@@ -243,6 +248,7 @@ namespace Interface
                 current_User.Visibility = Visibility.Visible;
                 current_User.Content = LoginTextBox.Text;
                 Out.Visibility = Visibility.Visible;
+                CreateDirectory.Visibility = Visibility.Visible;
             }
             else
                 MessageBox.Show("Неправльный email или пароль");
@@ -265,6 +271,7 @@ namespace Interface
                 current_User.Visibility = Visibility.Visible;
                 current_User.Content = SingTextBox.Text;
                 Out.Visibility = Visibility.Visible;
+                CreateDirectory.Visibility = Visibility.Visible;
             }
             else
                 MessageBox.Show("Email уже зарегистрирован");

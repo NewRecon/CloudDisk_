@@ -27,7 +27,7 @@
             </Style.Triggers>
         </Style>
         <Style x:Key="RoundWindowTemplate" TargetType="Window">
-            <Setter Property="Background" Value="Aqua"/>
+            <Setter Property="Background" Value="Honeydew"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Template">
                 <Setter.Value>
