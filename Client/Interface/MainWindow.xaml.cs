@@ -270,10 +270,5 @@ namespace Interface
                 BackVisible();
             }
         }
-
-        private void win_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            gridViewList.Height = win.Height / 1.5;
-        }
     }
 }
