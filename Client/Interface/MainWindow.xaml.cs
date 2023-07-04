@@ -172,11 +172,10 @@ namespace Interface
             if (viewList.SelectedItem != null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Title = "dcs";
                 saveFileDialog.FileName = selectedListView();
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    await Controller.DownloadFileAsync(saveFileDialog.FileName, selectedListView());                   
+                    await Controller.DownloadFileAsync(saveFileDialog.FileName.Remove(saveFileDialog.FileName.LastIndexOf('\\')), selectedListView());                   
                 }
             }
             viewList.Items.Clear();
