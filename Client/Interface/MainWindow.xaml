@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Interface"
         mc:Ignorable="d"
-        Title="CloudDisk_" Height="550" Width="840"
-        Style="{StaticResource RoundWindowTemplate}"
+        Title="CloudDisk_" Height="600" Width="840"
+        Style="{StaticResource RoundWindowTemplate}" SizeChanged="win_SizeChanged"
         >
     <Grid x:Name="grid">
 
-        <Grid  Height="400px" >
+        <Grid x:Name="gridViewList"  Height="400px" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -44,22 +44,22 @@
             <Button x:Name="SingButton" Grid.Column="2" Grid.Row="1" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Width="106" Content="Sign Up" FontSize="16" FontWeight="Bold" Click="SingButton_Click"/>
 
         </StackPanel>
-        
+
         <StackPanel x:Name="LogAndSign" Margin="379,0,10,373">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="205*"/>
-                    <ColumnDefinition Width="129*"/>
-                    <ColumnDefinition Width="117*"/>
+                    <ColumnDefinition Width="58*"/>
+                    <ColumnDefinition Width="188*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="10"/>
                     <RowDefinition Height="31"/>
                     <RowDefinition Height="49"/>
                 </Grid.RowDefinitions>
-                
-                <Button x:Name="Out" Grid.Column="2" Grid.Row="2" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log_out" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" FontSize="14" Click="Out_Click" />
-                <Label x:Name="current_User" Grid.Column="2" Grid.Row="1" Visibility="Collapsed" Content="Login" HorizontalAlignment="Left" VerticalAlignment="Center"  FontSize="14" Width="226" Height="28"/>
+
+                <Button x:Name="Out" Grid.Column="2" Grid.Row="2" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log_out" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="100" FontSize="16" Click="Out_Click" FontWeight="Bold" />
+                <Label x:Name="current_User" Grid.Column="2" Grid.Row="1" Visibility="Collapsed" Content="Login" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="16" FontStyle="Italic"/>
 
             </Grid>
 
