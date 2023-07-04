@@ -34,26 +34,17 @@
 
         </Grid>
 
-        <StackPanel x:Name="loginStackPanel" Visibility="Collapsed" Margin="307,82,204,112">
+        <StackPanel x:Name="loginStackPanel" Visibility="Visible" Margin="276,81,236,113">
 
             <Label Content="Email" Width="216" Height="39" FontSize="14" />
             <TextBox x:Name="LoginTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
             <Label Content="Password" Width="214" Height="33"/>
             <PasswordBox x:Name="LoginPassword" Width="216"/>
-            <Button x:Name="okLoginButton" Style="{StaticResource RoundButtonTemplate}" Background="Green" FontSize="16" Content="Ok" Width="106" Margin="30" Click="okLoginButton_Click" FontWeight="Bold"/>
+            <Button x:Name="loginButton" Grid.Column="1" Grid.Row="1" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Margin="25" Width="106" Content="Login" FontSize="16" FontWeight="Bold" Click="Button_Click"/>
+            <Button x:Name="SingButton" Grid.Column="2" Grid.Row="1" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Width="106" Content="Sign Up" FontSize="16" FontWeight="Bold" Click="SingButton_Click"/>
 
         </StackPanel>
-        <StackPanel x:Name="SingUpStackPanel" Visibility="Collapsed" Margin="307,82,204,91">
-
-            <Label Content="Email" Width="216" Height="39" FontSize="14" />
-            <TextBox x:Name="SingTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>
-            <Label Content="Password" Width="214" Height="33"/>
-            <PasswordBox x:Name="SingPassword" Width="216"/>
-            <!--<Label Content="Del this pls" Width="216" Height="39" FontSize="14" />
-            <TextBox x:Name="SingEmailTextBox" TextWrapping="Wrap" Text="" Width="218" FontSize="14"/>-->
-            <Button x:Name="okSingButton" Style="{StaticResource RoundButtonTemplate}" Background="Green" FontSize="16" Content="Registration" Width="106" Margin="30" Click="okSingButton_Click" FontWeight="Bold"/>
-
-        </StackPanel>
+        
         <StackPanel x:Name="LogAndSign" Margin="379,0,10,373">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -66,9 +57,8 @@
                     <RowDefinition Height="31"/>
                     <RowDefinition Height="49"/>
                 </Grid.RowDefinitions>
-                <Button x:Name="loginButton" Grid.Column="1" Grid.Row="1" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Content="Login" FontSize="14" Click="Button_Click"/>
-                <Button x:Name="SingButton" Grid.Column="2" Grid.Row="1" Style="{StaticResource RoundButtonTemplate}" Visibility="Visible" Background="CadetBlue" Content="Sign Up" FontSize="14" Click="SingButton_Click"/>
-                <Button x:Name="Out" Grid.Column="2" Grid.Row="2" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log me out" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" FontSize="14" Click="Out_Click" />
+                
+                <Button x:Name="Out" Grid.Column="2" Grid.Row="2" Style="{StaticResource RoundButtonTemplate}" Visibility="Collapsed" Content="Log_out" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" FontSize="14" Click="Out_Click" />
                 <Label x:Name="current_User" Grid.Column="2" Grid.Row="1" Visibility="Collapsed" Content="Login" HorizontalAlignment="Left" VerticalAlignment="Center"  FontSize="14" Width="226" Height="28"/>
 
             </Grid>
