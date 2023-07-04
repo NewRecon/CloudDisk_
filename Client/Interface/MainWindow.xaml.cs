@@ -175,7 +175,7 @@ namespace Interface
                 saveFileDialog.FileName = selectedListView();
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    await Controller.DownloadFileAsync(saveFileDialog.FileName.Remove(saveFileDialog.FileName.LastIndexOf('\\')), selectedListView());                   
+                    await Controller.DownloadFileAsync(saveFileDialog.FileName.Remove(saveFileDialog.FileName.LastIndexOf('\\')), selectedListView(),CurrentDirrectory);                   
                 }
             }
             viewList.Items.Clear();
@@ -271,5 +271,9 @@ namespace Interface
             }
         }
 
+        private void win_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            gridViewList.Height = win.Height / 1.5;
+        }
     }
 }
