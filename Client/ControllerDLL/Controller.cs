@@ -252,8 +252,9 @@ namespace ControllerDLL
 
         // затестить
         // Скачивание одного файла
-        public static async Task DownloadFileAsync(string path, string file)
+        public static async Task DownloadFileAsync(string path, string file, string curDirectory) // path - путь куда сохраняем, file - имя файла, curDirectory - текущая папка на диске
         {
+            currentDirectory = curDirectory;
             client = new TcpClient();
             string recievedMessage = "";
             try
