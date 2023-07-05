@@ -17,13 +17,6 @@ namespace File_Server
         static string pathMainDirectory = $@"{Environment.CurrentDirectory}\Files\";
         static async Task Main(string[] args)
         {
-            //string sourceFolder = @"C:\Users\gamej\Desktop\CloudDisk_\Server\File_server\File_Server\bin\Debug\Files\user1\test3\aaaaaaa"; // исходная папка
-            //string zipFile = @"C:\Users\gamej\Desktop\CloudDisk_\Server\File_server\File_Server\bin\Debug\Files\user1\test3\aaaaaaa.zip"; // сжатый файл
-            //ZipFile.CreateFromDirectory(sourceFolder, zipFile);
-
-
-
-            //return;
             file_Server.Start();
             var t = Task.Run(() => RequestsClientsAsync());
             Console.WriteLine("Server start");
