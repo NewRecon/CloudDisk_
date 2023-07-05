@@ -162,7 +162,7 @@ namespace ControllerDLL
                 using (NetworkStream ns = client.GetStream())
                 {
                     toRecieve.Request = "Registration";
-                    toRecieve.Path = "";
+                    toRecieve.Path = toRecieve.Key;
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
                     await ns.WriteAsync(messsage, 0, messsage.Length);
@@ -262,7 +262,7 @@ namespace ControllerDLL
                 client.Connect(endPointFile);
                 using (NetworkStream ns = client.GetStream())
                 {
-                    toRecieve.Request = "Download";
+                    toRecieve.Request = "DownloadFile";
                     toRecieve.Path = currentDirectory;
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
@@ -270,6 +270,45 @@ namespace ControllerDLL
 
                     byte[] bytes = new byte[4096];
                     using (FileStream fs = new FileStream(path + file.Substring(file.LastIndexOf(@"\") + 1), FileMode.OpenOrCreate))
+                    {
+                        var count = await ns.ReadAsync(bytes, 0, bytes.Length);
+                        while (count > 0)
+                        {
+                            await fs.WriteAsync(bytes, 0, count);
+                            if (count < 4096)
+                                break;
+                            count = await ns.ReadAsync(bytes, 0, bytes.Length);
+                        }
+                    }
+
+                    ns.Flush();
+                }
+                client.Close();
+                client.Dispose();
+            }
+            catch (Exception ex) { }
+        }
+
+        // затестить
+        // Скачивание директории
+        public static async Task DownloadDirectoryAsync(string path, string file, string curDirectory)
+        {
+            currentDirectory = curDirectory;
+            client = new TcpClient();
+            string recievedMessage = "";
+            try
+            {
+                client.Connect(endPointFile);
+                using (NetworkStream ns = client.GetStream())
+                {
+                    toRecieve.Request = "DownloadDirectory";
+                    toRecieve.Path = currentDirectory;
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
+                    await ns.WriteAsync(messsage, 0, messsage.Length);
+
+                    byte[] bytes = new byte[4096];
+                    using (FileStream fs = new FileStream(path + file.Substring(file.LastIndexOf(@"\") + 1) + ".zip", FileMode.OpenOrCreate))
                     {
                         var count = await ns.ReadAsync(bytes, 0, bytes.Length);
                         while (count > 0)
