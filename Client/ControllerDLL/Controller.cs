@@ -15,9 +15,9 @@ namespace ControllerDLL
     public class Controller
     {
         // Сервер БД
-        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
+        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 9000);
         // Файловый сервер
-        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 8888);
+        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 8888);
 
         static TcpClient client;
 
@@ -226,7 +226,8 @@ namespace ControllerDLL
                 using (NetworkStream ns = client.GetStream())
                 {
                     toRecieve.Request = "Upload";
-                    toRecieve.Path = currentDirectory;
+                    
+                    toRecieve.Path = currentDirectory+@"\"+ file.Substring(file.LastIndexOf(@"\") + 1);
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
                     await ns.WriteAsync(messsage, 0, messsage.Length);
@@ -263,7 +264,7 @@ namespace ControllerDLL
                 using (NetworkStream ns = client.GetStream())
                 {
                     toRecieve.Request = "DownloadFile";
-                    toRecieve.Path = currentDirectory;
+                    toRecieve.Path = currentDirectory + file.Substring(file.LastIndexOf(@"\") + 1);
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
                     await ns.WriteAsync(messsage, 0, messsage.Length);
@@ -302,7 +303,7 @@ namespace ControllerDLL
                 using (NetworkStream ns = client.GetStream())
                 {
                     toRecieve.Request = "DownloadDirectory";
-                    toRecieve.Path = currentDirectory;
+                    toRecieve.Path = currentDirectory+ file.Substring(file.LastIndexOf(@"\") + 1);
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
                     await ns.WriteAsync(messsage, 0, messsage.Length);

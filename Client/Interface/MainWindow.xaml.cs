@@ -119,7 +119,7 @@ namespace Interface
             if (await Controller.RegistrationAsync(LoginTextBox.Text, LoginPassword.Password))
             {
                 BackVisible();
-                listViewSourse(await Controller.CreateMainDirectoryAsync());
+                listViewSourse(await Controller.CreateDirectoryAsync(""));
                 UploadFile.Visibility = Visibility.Visible;
                 loginButton.Visibility = Visibility.Collapsed;
                 SingButton.Visibility = Visibility.Collapsed;
@@ -188,7 +188,8 @@ namespace Interface
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == true)
             {
-                await Controller.UploadFileAsync(ofd.FileName, ofd.FileName.Substring(ofd.FileName.LastIndexOf('\\') + 1));
+               // MessageBox.Show(ofd.FileName);
+                await Controller.UploadFileAsync(CurrentDirrectory,ofd.FileName);
             }
             viewList.Items.Clear();
             listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
