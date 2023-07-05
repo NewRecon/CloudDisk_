@@ -97,6 +97,7 @@ namespace File_Server
 
         static async Task DownloadFileAsync(NetworkStream ns, string path)
         {
+            await Console.Out.WriteLineAsync(path);
             byte[] file = File.ReadAllBytes(path);
             await ns.WriteAsync(file, 0, file.Length);
         }
