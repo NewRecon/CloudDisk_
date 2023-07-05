@@ -23,7 +23,6 @@ namespace File_Server
             var t = Task.Run(() => RequestsClientsAsync());
             Console.WriteLine("Server start");
             t.Wait();
-
         }
 
         static async Task RequestsClientsAsync()
@@ -46,15 +45,9 @@ namespace File_Server
                 string result = Encoding.UTF8.GetString(getBytes, 0, count);
                 var userRequest = JsonSerializer.Deserialize<JsonRequest>(result);
 
-                await Console.Out.WriteLineAsync("userRequest.Request - " + userRequest.Request);
-                await Console.Out.WriteLineAsync("userRequest.Key - " + userRequest.Key);
-                await Console.Out.WriteLineAsync("userRequest.Path - " + userRequest.Path);
-
-                // +
                 if (userRequest.Request == "Info")
                     await FileAndDirectoryInfoAsync(ns, pathMainDirectory + userRequest.Key + @"\" + userRequest.Path);
 
-                // +
                 else if (userRequest.Request == "CreateDirectory")
                     await CreateDirectory(ns, pathMainDirectory + userRequest.Key + @"\" + userRequest.Path);
 
@@ -97,7 +90,6 @@ namespace File_Server
 
         static async Task DownloadFileAsync(NetworkStream ns, string path)
         {
-            await Console.Out.WriteLineAsync(path);
             byte[] file = File.ReadAllBytes(path);
             await ns.WriteAsync(file, 0, file.Length);
         }
@@ -143,7 +135,7 @@ namespace File_Server
 
         static async Task DeleteDirectory(NetworkStream ns, string path)
         {
-            Directory.Delete(path);
+            Directory.Delete(path, true);
             await FileAndDirectoryInfoAsync(ns, path.Substring(0, path.LastIndexOf(@"\")));
         }
     }

@@ -15,9 +15,9 @@ namespace ControllerDLL
     public class Controller
     {
         // Сервер БД
-        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 9000);
+        static IPEndPoint endPointDB = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 9000);
         // Файловый сервер
-        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.113"), 8888);
+        static IPEndPoint endPointFile = new IPEndPoint(IPAddress.Parse("192.168.0.99"), 8888);
 
         static TcpClient client;
 
@@ -39,17 +39,11 @@ namespace ControllerDLL
 
         public static async Task<bool> AuthorizationAsync(string email, string password)
         {
-            #region SSL
-            //X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-            //store.Open(OpenFlags.ReadOnly);
-            //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "CloudDiskCer", false);
-            #endregion
             client = new TcpClient();
             try
             {
                 client.Connect(endPointDB);
                 using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
-                //using (NetworkStream sslStream = client.GetStream())
                 {
                     sslStream.AuthenticateAsClient("CloudDiskCer");
 
@@ -88,7 +82,6 @@ namespace ControllerDLL
             {
                 client.Connect(endPointDB);
                 using (SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null))
-                //using (NetworkStream sslStream = client.GetStream())
                 {
                     sslStream.AuthenticateAsClient("CloudDiskCer");
 
@@ -151,37 +144,6 @@ namespace ControllerDLL
             return recievedMessage;
         }
 
-        // Создание директории при регистрации
-        public static async Task<string> CreateMainDirectoryAsync()
-        {
-            client = new TcpClient();
-            string recievedMessage = "";
-            try
-            {
-                client.Connect(endPointFile);
-                using (NetworkStream ns = client.GetStream())
-                {
-                    toRecieve.Request = "Registration";
-                    toRecieve.Path = toRecieve.Key;
-
-                    byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
-                    await ns.WriteAsync(messsage, 0, messsage.Length);
-
-                    messsage = new byte[1024];
-                    int recievedMessageSize = await ns.ReadAsync(messsage, 0, messsage.Length);
-                    recievedMessage = Encoding.UTF8.GetString(messsage, 0, recievedMessageSize);
-
-                    ns.Flush();
-                }
-                client.Close();
-                client.Dispose();
-            }
-            catch (Exception ex) { }
-
-            return recievedMessage;
-        }
-
-        // затестить
         // Создание директории
         public static async Task<string> CreateDirectoryAsync(string path)
         {
@@ -213,7 +175,6 @@ namespace ControllerDLL
             return recievedMessage;
         }
 
-        // затестить
         // Загрузка на диск
         public static async Task<string> UploadFileAsync(string path, string file)
         {
@@ -251,9 +212,8 @@ namespace ControllerDLL
             return recievedMessage;
         }
 
-        // затестить
         // Скачивание одного файла
-        public static async Task DownloadFileAsync(string path, string file, string curDirectory) // path - путь куда сохраняем, file - имя файла, curDirectory - текущая папка на диске
+        public static async Task DownloadFileAsync(string path, string file, string curDirectory)
         {
             currentDirectory = curDirectory;
             client = new TcpClient();
@@ -290,7 +250,6 @@ namespace ControllerDLL
             catch (Exception ex) { }
         }
 
-        // затестить
         // Скачивание директории
         public static async Task DownloadDirectoryAsync(string path, string file, string curDirectory)
         {
@@ -303,7 +262,7 @@ namespace ControllerDLL
                 using (NetworkStream ns = client.GetStream())
                 {
                     toRecieve.Request = "DownloadDirectory";
-                    toRecieve.Path = currentDirectory+ file.Substring(file.LastIndexOf(@"\") + 1);
+                    toRecieve.Path = currentDirectory + file.Substring(file.LastIndexOf(@"\") + 1);
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
                     await ns.WriteAsync(messsage, 0, messsage.Length);
@@ -329,7 +288,6 @@ namespace ControllerDLL
             catch (Exception ex) { }
         }
 
-        // затестить
         // Удаление файла
         public static async Task<string> DeleteFileAsync(string path, string file)
         {
@@ -361,9 +319,8 @@ namespace ControllerDLL
             return recievedMessage;
         }
 
-        // затестить
         // Удаление директории
-        public static async Task<string> DeleteDirectoryAsync(string path)
+        public static async Task<string> DeleteDirectoryAsync(string path, string file)
         {
             currentDirectory = path;
             client = new TcpClient();
@@ -374,7 +331,7 @@ namespace ControllerDLL
                 using (NetworkStream ns = client.GetStream())
                 {
                     toRecieve.Request = "DeleteDirectory";
-                    toRecieve.Path = currentDirectory;
+                    toRecieve.Path = currentDirectory + file;
 
                     byte[] messsage = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(toRecieve));
                     await ns.WriteAsync(messsage, 0, messsage.Length);

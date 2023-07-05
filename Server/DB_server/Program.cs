@@ -22,13 +22,7 @@ namespace DB_server
         static async Task Main(string[] args)
         {
             // запустить от имени администратора
-            #region SSL
             serverCertificate = new X509Certificate2(Directory.GetCurrentDirectory()+@"\CloudDisk.pfx", "123321", X509KeyStorageFlags.PersistKeySet);
-            //X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            //store.Open(OpenFlags.ReadOnly);
-            //X509CertificateCollection cert = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);
-            //serverCertificate = cert[0];
-            #endregion
 
             listener.Start();
             await Console.Out.WriteLineAsync("Server started");
@@ -46,7 +40,6 @@ namespace DB_server
             try
             {
                 using (SslStream sslStream = new SslStream(client.tcpClient.GetStream(), false))
-                //using (NetworkStream sslStream = client.tcpClient.GetStream())
                 {
                     sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
                     sslStream.ReadTimeout = 5000;

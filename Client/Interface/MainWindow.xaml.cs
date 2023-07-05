@@ -175,7 +175,10 @@ namespace Interface
                 saveFileDialog.FileName = selectedListView();
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    await Controller.DownloadFileAsync(saveFileDialog.FileName.Remove(saveFileDialog.FileName.LastIndexOf('\\')), selectedListView(),CurrentDirrectory);                   
+                    if (selectedListView().Contains("."))
+                        await Controller.DownloadFileAsync(saveFileDialog.FileName.Remove(saveFileDialog.FileName.LastIndexOf('\\') + 1), selectedListView(), CurrentDirrectory);
+                    else
+                        await Controller.DownloadDirectoryAsync(saveFileDialog.FileName.Remove(saveFileDialog.FileName.LastIndexOf('\\') + 1), selectedListView(), CurrentDirrectory);
                 }
             }
             viewList.Items.Clear();
@@ -215,7 +218,10 @@ namespace Interface
         {
             if (viewList.SelectedItem != null)
             {
-                await Controller.DeleteFileAsync(CurrentDirrectory, selectedListView());
+                if (selectedListView().Contains("."))
+                    await Controller.DeleteFileAsync(CurrentDirrectory, selectedListView());
+                else
+                    await Controller.DeleteDirectoryAsync(CurrentDirrectory, selectedListView());
                 viewList.Items.Clear();
                 listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
             }
@@ -245,7 +251,7 @@ namespace Interface
             if (CurrentDirrectory != "")
             {
                 viewList.Items.Clear();
-                CurrentDirrectory = CurrentDirrectory.Remove(CurrentDirrectory.LastIndexOf("\\"));
+                 CurrentDirrectory = CurrentDirrectory.Remove(CurrentDirrectory.LastIndexOf("\\"));
                 listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
                 BackVisible();
             }
@@ -262,10 +268,7 @@ namespace Interface
             if(!(((((sender as ListView).SelectedItem) as StackPanel).Children[1]) as TextBlock).Text.Contains("."))
             {               
                 string buf = a.Text.Substring(1);
-                CurrentDirrectory += $@"\{buf}";
-                /*if (CurrentDirrectory == null)
-                    CurrentDirrectory += a.Text;
-                else CurrentDirrectory += $@"\{a.Text}";*/
+                CurrentDirrectory += $@"{buf}\";
                 viewList.Items.Clear();
                 listViewSourse(await Controller.ShowAllFileInfoAsync(CurrentDirrectory));
                 BackVisible();
