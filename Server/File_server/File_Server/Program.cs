@@ -114,7 +114,8 @@ namespace File_Server
             IEnumerable<string> allDirectory = Directory.EnumerateDirectories(path, "*.*", SearchOption.TopDirectoryOnly);
             foreach (string filename in allDirectory)
             {
-                fileInfo.Append(filename.Substring(filename.LastIndexOf(@"\") + 1) + ";");
+                //Добавил в манифест размер папки, так как выше файлы идут с размером
+                fileInfo.Append(filename.Substring(filename.LastIndexOf(@"\") + 1) + ";" + filename.Length.ToString()+";");
             }
 
             byte[] data = Encoding.UTF8.GetBytes(fileInfo.ToString());
