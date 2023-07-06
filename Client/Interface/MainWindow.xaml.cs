@@ -28,7 +28,6 @@ namespace Interface
     public partial class MainWindow : Window
     {
         public string CurrentDirrectory = "";
-        Dictionary<string, Image> images = new Dictionary<string, Image>();
         public MainWindow()
         {          
             InitializeComponent();          
